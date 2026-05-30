@@ -1,9 +1,3 @@
-import { Client } from "@notionhq/client";
-
-const notion = new Client({
-  auth: process.env.NOTION_TOKEN,
-});
-
 const SUBMISSION_DEADLINE = new Date("2026-06-27T23:59:00-05:00");
 
 export async function POST(request: Request) {
@@ -48,15 +42,32 @@ export async function POST(request: Request) {
       );
     }
 
-    const existingEntries = await notion.databases.query({
-      database_id: process.env.NOTION_DATABASE_ID,
-      filter: {
-        property: "Email",
-        email: {
-          equals: email,
+    const queryResponse = await fetch(
+      `https://api.notion.com/v1/databases/${process.env.NOTION_DATABASE_ID}/query`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.NOTION_TOKEN}`,
+          "Content-Type": "application/json",
+          "Notion-Version": "2022-06-28",
         },
-      },
-    });
+        body: JSON.stringify({
+          filter: {
+            property: "Email",
+            email: {
+              equals: email,
+            },
+          },
+        }),
+      }
+    );
+
+    const existingEntries = await queryResponse.json();
+
+    if (!queryResponse.ok) {
+      console.error("NOTION QUERY ERROR:", existingEntries);
+      throw new Error(existingEntries.message || "Failed to query Notion");
+    }
 
     const properties = {
       Name: {
@@ -68,9 +79,11 @@ export async function POST(request: Request) {
           },
         ],
       },
+
       Email: {
         email,
       },
+
       Champion: {
         rich_text: [
           {
@@ -80,11 +93,13 @@ export async function POST(request: Request) {
           },
         ],
       },
+
       "Submitted At": {
         date: {
           start: new Date().toISOString(),
         },
       },
+
       "Round of 32": {
         rich_text: [
           {
@@ -94,6 +109,7 @@ export async function POST(request: Request) {
           },
         ],
       },
+
       "Round of 16": {
         rich_text: [
           {
@@ -103,6 +119,7 @@ export async function POST(request: Request) {
           },
         ],
       },
+
       Quarterfinals: {
         rich_text: [
           {
@@ -112,6 +129,7 @@ export async function POST(request: Request) {
           },
         ],
       },
+
       Semifinals: {
         rich_text: [
           {
@@ -121,6 +139,7 @@ export async function POST(request: Request) {
           },
         ],
       },
+
       "Total Points": {
         number: 0,
       },
@@ -129,29 +148,61 @@ export async function POST(request: Request) {
     if (existingEntries.results.length > 0) {
       const existingPage = existingEntries.results[0];
 
-      const response = await notion.pages.update({
-        page_id: existingPage.id,
-        properties,
-      });
+      const updateResponse = await fetch(
+        `https://api.notion.com/v1/pages/${existingPage.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${process.env.NOTION_TOKEN}`,
+            "Content-Type": "application/json",
+            "Notion-Version": "2022-06-28",
+          },
+          body: JSON.stringify({
+            properties,
+          }),
+        }
+      );
+
+      const updateData = await updateResponse.json();
+
+      if (!updateResponse.ok) {
+        console.error("NOTION UPDATE ERROR:", updateData);
+        throw new Error(updateData.message || "Failed to update Notion page");
+      }
 
       return Response.json({
         success: true,
         updated: true,
-        pageId: response.id,
+        pageId: updateData.id,
       });
     }
 
-    const response = await notion.pages.create({
-      parent: {
-        database_id: process.env.NOTION_DATABASE_ID,
+    const createResponse = await fetch("https://api.notion.com/v1/pages", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.NOTION_TOKEN}`,
+        "Content-Type": "application/json",
+        "Notion-Version": "2022-06-28",
       },
-      properties,
+      body: JSON.stringify({
+        parent: {
+          database_id: process.env.NOTION_DATABASE_ID,
+        },
+        properties,
+      }),
     });
+
+    const createData = await createResponse.json();
+
+    if (!createResponse.ok) {
+      console.error("NOTION CREATE ERROR:", createData);
+      throw new Error(createData.message || "Failed to create Notion page");
+    }
 
     return Response.json({
       success: true,
       updated: false,
-      pageId: response.id,
+      pageId: createData.id,
     });
   } catch (error) {
     console.error("NOTION SUBMISSION ERROR:", error);
