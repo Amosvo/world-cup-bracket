@@ -30,6 +30,8 @@ type LeaderboardEntry = {
   points: number;
 };
 
+type RoundKey = "r32" | "r16" | "qf" | "sf" | "final";
+
 function randomPick(match: string[]) {
   return match[Math.floor(Math.random() * match.length)];
 }
@@ -49,13 +51,13 @@ export default function Home() {
 
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(true);
+  const [mobileRound, setMobileRound] = useState<RoundKey>("r32");
 
   const submissionsClosed = new Date() > SUBMISSION_DEADLINE;
 
   async function loadLeaderboard() {
     try {
       setIsLoadingLeaderboard(true);
-
       const response = await fetch("/api/leaderboard");
       const data = await response.json();
 
@@ -72,15 +74,17 @@ export default function Home() {
   useEffect(() => {
     loadLeaderboard();
   }, []);
-if (submissionsClosed) {
-  return (
-    <FullLeaderboardView
-      leaderboard={leaderboard}
-      isLoadingLeaderboard={isLoadingLeaderboard}
-      loadLeaderboard={loadLeaderboard}
-    />
-  );
-}
+
+  if (submissionsClosed) {
+    return (
+      <FullLeaderboardView
+        leaderboard={leaderboard}
+        isLoadingLeaderboard={isLoadingLeaderboard}
+        loadLeaderboard={loadLeaderboard}
+      />
+    );
+  }
+
   function pickWinner(round: string, index: number, team: string) {
     if (team.includes("TBD")) return;
 
@@ -152,12 +156,6 @@ if (submissionsClosed) {
     setError("");
     setIsSubmitting(true);
 
-    if (submissionsClosed) {
-      setError("Submissions are now closed.");
-      setIsSubmitting(false);
-      return;
-    }
-
     if (!name.trim()) {
       setError("Please enter your name or nickname.");
       setIsSubmitting(false);
@@ -228,6 +226,7 @@ if (submissionsClosed) {
     setChampion("");
     setSubmitted(false);
     setError("");
+    setMobileRound("r32");
   }
 
   const r16Matches = Array.from({ length: 8 }, (_, i) => [
@@ -250,44 +249,73 @@ if (submissionsClosed) {
     sfWinners[1] || "Winner TBD",
   ];
 
+  const mobileRounds = [
+    {
+      key: "r32" as RoundKey,
+      title: "Round of 32",
+      matches: roundOf32,
+      winners: r32Winners,
+    },
+    {
+      key: "r16" as RoundKey,
+      title: "Round of 16",
+      matches: r16Matches,
+      winners: r16Winners,
+    },
+    {
+      key: "qf" as RoundKey,
+      title: "Quarterfinals",
+      matches: qfMatches,
+      winners: qfWinners,
+    },
+    {
+      key: "sf" as RoundKey,
+      title: "Semifinals",
+      matches: sfMatches,
+      winners: sfWinners,
+    },
+    {
+      key: "final" as RoundKey,
+      title: "Final",
+      matches: [finalMatch],
+      winners: [champion],
+    },
+  ];
+
+  const currentMobileRoundIndex = mobileRounds.findIndex(
+    (round) => round.key === mobileRound
+  );
+  const currentMobileRound = mobileRounds[currentMobileRoundIndex];
+
   return (
-    <main className="min-h-screen bg-neutral-950 p-6 text-white">
-      <div className="mb-8">
+    <main className="min-h-screen bg-neutral-950 p-4 text-white md:p-6">
+      <div className="mb-6 md:mb-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-neutral-400">
+            <p className="text-xs uppercase tracking-[0.3em] text-neutral-400 md:text-sm">
               2026 World Cup
             </p>
 
-            <h1 className="text-4xl font-bold">Knockout Challenge</h1>
+            <h1 className="text-3xl font-bold md:text-4xl">
+              Knockout Challenge
+            </h1>
 
-            <p className="mt-2 text-neutral-400">
+            <p className="mt-2 text-sm text-neutral-400 md:text-base">
               Pick each winner until one champion remains.
             </p>
           </div>
 
           <a
             href="#leaderboard"
-            className="rounded-xl border border-neutral-700 px-5 py-3 text-sm font-bold text-white transition hover:bg-neutral-800"
+            className="rounded-xl border border-neutral-700 px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-neutral-800"
           >
             🏆 View Leaderboard
           </a>
         </div>
-
-        {submissionsClosed && (
-          <div className="mt-4 rounded-2xl border border-red-700 bg-red-950 p-4">
-            <h2 className="font-bold">Submissions are now closed</h2>
-
-            <p className="text-sm text-red-200">
-              The deadline to submit or update brackets was June 27, 2026 at
-              11:59 PM.
-            </p>
-          </div>
-        )}
       </div>
 
-      <section className="mb-6 rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
-        <h2 className="text-xl font-bold">Need a quick pick?</h2>
+      <section className="mb-6 rounded-2xl border border-neutral-800 bg-neutral-900 p-4 md:p-5">
+        <h2 className="text-lg font-bold md:text-xl">Need a quick pick?</h2>
 
         <p className="mt-1 text-sm text-neutral-400">
           Use Auto Select to randomly complete the full bracket. You can still
@@ -297,56 +325,108 @@ if (submissionsClosed) {
         <button
           type="button"
           onClick={autoSelectBracket}
-          disabled={submissionsClosed}
-          className="mt-4 rounded-xl bg-white px-5 py-3 font-bold text-black transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-4 w-full rounded-xl bg-white px-5 py-3 font-bold text-black transition hover:bg-neutral-200 md:w-auto"
         >
           Auto Select Bracket
         </button>
       </section>
 
-      <div className="overflow-x-auto">
-        <div className="grid min-w-[1600px] grid-cols-5 items-center gap-16">
-          <Round
-            title="Round of 32"
-            matches={roundOf32}
-            winners={r32Winners}
-            roundKey="r32"
-            onPick={pickWinner}
-          />
-
-          <Round
-            title="Round of 16"
-            matches={r16Matches}
-            winners={r16Winners}
-            roundKey="r16"
-            onPick={pickWinner}
-          />
-
-          <Round
-            title="Quarterfinals"
-            matches={qfMatches}
-            winners={qfWinners}
-            roundKey="qf"
-            onPick={pickWinner}
-          />
-
-          <Round
-            title="Semifinals"
-            matches={sfMatches}
-            winners={sfWinners}
-            roundKey="sf"
-            onPick={pickWinner}
-          />
-
-          <Round
-            title="Final"
-            matches={[finalMatch]}
-            winners={[champion]}
-            roundKey="final"
-            onPick={pickWinner}
-          />
+      <section className="md:hidden">
+        <div className="mb-4 flex gap-2 overflow-x-auto pb-2">
+          {mobileRounds.map((round) => (
+            <button
+              key={round.key}
+              type="button"
+              onClick={() => setMobileRound(round.key)}
+              className={`shrink-0 rounded-full px-4 py-2 text-sm font-bold transition ${
+                mobileRound === round.key
+                  ? "bg-white text-black"
+                  : "bg-neutral-800 text-white"
+              }`}
+            >
+              {round.title}
+            </button>
+          ))}
         </div>
-      </div>
+
+        <MobileRound
+          title={currentMobileRound.title}
+          matches={currentMobileRound.matches}
+          winners={currentMobileRound.winners}
+          roundKey={currentMobileRound.key}
+          onPick={pickWinner}
+        />
+
+        <div className="mt-4 flex gap-3">
+          <button
+            type="button"
+            disabled={currentMobileRoundIndex === 0}
+            onClick={() =>
+              setMobileRound(mobileRounds[currentMobileRoundIndex - 1].key)
+            }
+            className="flex-1 rounded-xl border border-neutral-700 px-4 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Back
+          </button>
+
+          <button
+            type="button"
+            disabled={currentMobileRoundIndex === mobileRounds.length - 1}
+            onClick={() =>
+              setMobileRound(mobileRounds[currentMobileRoundIndex + 1].key)
+            }
+            className="flex-1 rounded-xl bg-white px-4 py-3 font-bold text-black disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Next Round
+          </button>
+        </div>
+      </section>
+
+      <section className="hidden md:block">
+        <div className="overflow-x-auto">
+          <div className="grid min-w-[1600px] grid-cols-5 items-center gap-16">
+            <Round
+              title="Round of 32"
+              matches={roundOf32}
+              winners={r32Winners}
+              roundKey="r32"
+              onPick={pickWinner}
+            />
+
+            <Round
+              title="Round of 16"
+              matches={r16Matches}
+              winners={r16Winners}
+              roundKey="r16"
+              onPick={pickWinner}
+            />
+
+            <Round
+              title="Quarterfinals"
+              matches={qfMatches}
+              winners={qfWinners}
+              roundKey="qf"
+              onPick={pickWinner}
+            />
+
+            <Round
+              title="Semifinals"
+              matches={sfMatches}
+              winners={sfWinners}
+              roundKey="sf"
+              onPick={pickWinner}
+            />
+
+            <Round
+              title="Final"
+              matches={[finalMatch]}
+              winners={[champion]}
+              roundKey="final"
+              onPick={pickWinner}
+            />
+          </div>
+        </div>
+      </section>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
@@ -378,15 +458,13 @@ if (submissionsClosed) {
                 Thank you for participating in the World Cup Knockout Challenge.
               </p>
 
-              {!submissionsClosed && (
-                <button
-                  type="button"
-                  onClick={() => setSubmitted(false)}
-                  className="mt-4 w-full rounded-xl border border-neutral-700 px-4 py-3 font-bold text-white transition hover:bg-neutral-800"
-                >
-                  Edit Bracket
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => setSubmitted(false)}
+                className="mt-4 w-full rounded-xl border border-neutral-700 px-4 py-3 font-bold text-white transition hover:bg-neutral-800"
+              >
+                Edit Bracket
+              </button>
             </div>
           ) : (
             <>
@@ -402,7 +480,6 @@ if (submissionsClosed) {
                   onChange={(event) => setName(event.target.value)}
                   className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-3 text-white"
                   placeholder="Enter your name"
-                  disabled={submissionsClosed}
                 />
               </div>
 
@@ -416,7 +493,6 @@ if (submissionsClosed) {
                   onChange={(event) => setEmail(event.target.value)}
                   className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-3 text-white"
                   placeholder="you@example.com"
-                  disabled={submissionsClosed}
                 />
               </div>
 
@@ -425,21 +501,16 @@ if (submissionsClosed) {
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={isSubmitting || submissionsClosed}
+                disabled={isSubmitting}
                 className="w-full rounded-xl bg-white px-4 py-3 font-bold text-black transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {submissionsClosed
-                  ? "Submissions Closed"
-                  : isSubmitting
-                    ? "Submitting..."
-                    : "Submit Bracket"}
+                {isSubmitting ? "Submitting..." : "Submit Bracket"}
               </button>
 
               <button
                 type="button"
                 onClick={resetBracket}
-                disabled={submissionsClosed}
-                className="mt-3 w-full rounded-xl border border-neutral-700 px-4 py-3 font-bold text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-3 w-full rounded-xl border border-neutral-700 px-4 py-3 font-bold text-white transition hover:bg-neutral-800"
               >
                 Reset Bracket
               </button>
@@ -475,40 +546,157 @@ if (submissionsClosed) {
           </button>
         </div>
 
-        <div className="mt-5 grid gap-3 md:grid-cols-3">
-          {isLoadingLeaderboard ? (
-            <p className="text-neutral-400">Loading leaderboard...</p>
-          ) : leaderboard.length === 0 ? (
-            <p className="text-neutral-400">No leaderboard entries yet.</p>
-          ) : (
-            leaderboard.map((entry, index) => (
-              <div
-                key={entry.id}
-                className="rounded-xl border border-neutral-700 p-4"
-              >
-                <p className="text-2xl">
-                  {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
-                </p>
-
-                <p className="mt-2 font-bold">
-                  {index + 1}. {entry.name}
-                </p>
-
-                <p className="text-sm text-neutral-400">
-                  Champion: {entry.champion}
-                </p>
-
-                <p className="mt-3 text-xl font-bold">
-                  {entry.points} pts
-                </p>
-              </div>
-            ))
-          )}
-        </div>
+        <LeaderboardGrid
+          leaderboard={leaderboard.slice(0, 3)}
+          isLoadingLeaderboard={isLoadingLeaderboard}
+        />
       </section>
     </main>
   );
 }
+
+function MobileRound({
+  title,
+  matches,
+  winners,
+  roundKey,
+  onPick,
+}: {
+  title: string;
+  matches: string[][];
+  winners: string[];
+  roundKey: string;
+  onPick: (round: string, index: number, team: string) => void;
+}) {
+  return (
+    <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
+      <h2 className="mb-4 text-xl font-bold">{title}</h2>
+
+      <div className="flex flex-col gap-4">
+        {matches.map((match, index) => (
+          <div
+            key={`${roundKey}-${index}`}
+            className="rounded-xl border border-neutral-800 bg-neutral-950 p-3"
+          >
+            <p className="mb-3 text-xs uppercase tracking-widest text-neutral-500">
+              Match {index + 1}
+            </p>
+
+            {match.map((team, teamIndex) => (
+              <button
+                key={`${roundKey}-${index}-${teamIndex}`}
+                type="button"
+                disabled={team.includes("TBD")}
+                onClick={() => onPick(roundKey, index, team)}
+                className={`mb-2 block w-full rounded-xl px-4 py-3 text-left font-semibold transition ${
+                  winners[index] === team
+                    ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.35)]"
+                    : "bg-neutral-800 hover:bg-neutral-700"
+                } disabled:cursor-not-allowed disabled:opacity-40`}
+              >
+                {team}
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Round({
+  title,
+  matches,
+  winners,
+  roundKey,
+  onPick,
+}: {
+  title: string;
+  matches: string[][];
+  winners: string[];
+  roundKey: string;
+  onPick: (round: string, index: number, team: string) => void;
+}) {
+  return (
+    <section>
+      <h2 className="mb-4 text-lg font-semibold text-neutral-300">{title}</h2>
+
+      <div className="flex flex-col gap-10">
+        {matches.map((match, index) => (
+          <div
+            key={`${roundKey}-${index}`}
+            className={`rounded-2xl border border-neutral-800 bg-neutral-900 p-5 transition ${
+              title === "Final"
+                ? "scale-110 border-white"
+                : title === "Semifinals"
+                  ? "scale-105"
+                  : ""
+            }`}
+          >
+            <p className="mb-3 text-xs uppercase tracking-widest text-neutral-500">
+              Match {index + 1}
+            </p>
+
+            {match.map((team, teamIndex) => (
+              <button
+                key={`${roundKey}-${index}-${teamIndex}`}
+                type="button"
+                disabled={team.includes("TBD")}
+                onClick={() => onPick(roundKey, index, team)}
+                className={`mb-2 block w-full rounded-xl px-4 py-3 text-left font-semibold transition ${
+                  winners[index] === team
+                    ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.35)]"
+                    : "bg-neutral-800 hover:scale-[1.02] hover:bg-neutral-700"
+                } disabled:cursor-not-allowed disabled:opacity-40`}
+              >
+                {team}
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function LeaderboardGrid({
+  leaderboard,
+  isLoadingLeaderboard,
+}: {
+  leaderboard: LeaderboardEntry[];
+  isLoadingLeaderboard: boolean;
+}) {
+  if (isLoadingLeaderboard) {
+    return <p className="mt-5 text-neutral-400">Loading leaderboard...</p>;
+  }
+
+  if (leaderboard.length === 0) {
+    return <p className="mt-5 text-neutral-400">No leaderboard entries yet.</p>;
+  }
+
+  return (
+    <div className="mt-5 grid gap-3 md:grid-cols-3">
+      {leaderboard.map((entry, index) => (
+        <div key={entry.id} className="rounded-xl border border-neutral-700 p-4">
+          <p className="text-2xl">
+            {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
+          </p>
+
+          <p className="mt-2 font-bold">
+            {index + 1}. {entry.name}
+          </p>
+
+          <p className="text-sm text-neutral-400">
+            Champion: {entry.champion}
+          </p>
+
+          <p className="mt-3 text-xl font-bold">{entry.points} pts</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function FullLeaderboardView({
   leaderboard,
   isLoadingLeaderboard,
@@ -566,10 +754,10 @@ function FullLeaderboardView({
                     {index === 0
                       ? "🥇 "
                       : index === 1
-                      ? "🥈 "
-                      : index === 2
-                      ? "🥉 "
-                      : ""}
+                        ? "🥈 "
+                        : index === 2
+                          ? "🥉 "
+                          : ""}
                     {entry.name}
                   </h2>
 
@@ -585,59 +773,5 @@ function FullLeaderboardView({
         </div>
       )}
     </main>
-  );
-}
-function Round({
-  title,
-  matches,
-  winners,
-  roundKey,
-  onPick,
-}: {
-  title: string;
-  matches: string[][];
-  winners: string[];
-  roundKey: string;
-  onPick: (round: string, index: number, team: string) => void;
-}) {
-  return (
-    <section>
-      <h2 className="mb-4 text-lg font-semibold text-neutral-300">{title}</h2>
-
-      <div className="flex flex-col gap-10">
-        {matches.map((match, index) => (
-          <div
-            key={`${roundKey}-${index}`}
-            className={`rounded-2xl border border-neutral-800 bg-neutral-900 p-5 transition ${
-              title === "Final"
-                ? "scale-110 border-white"
-                : title === "Semifinals"
-                  ? "scale-105"
-                  : ""
-            }`}
-          >
-            <p className="mb-3 text-xs uppercase tracking-widest text-neutral-500">
-              Match {index + 1}
-            </p>
-
-            {match.map((team, teamIndex) => (
-              <button
-                key={`${roundKey}-${index}-${teamIndex}`}
-                type="button"
-                disabled={team.includes("TBD")}
-                onClick={() => onPick(roundKey, index, team)}
-                className={`mb-2 block w-full rounded-xl px-4 py-3 text-left font-semibold transition ${
-                  winners[index] === team
-                    ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.35)]"
-                    : "bg-neutral-800 hover:scale-[1.02] hover:bg-neutral-700"
-                } disabled:cursor-not-allowed disabled:opacity-40`}
-              >
-                {team}
-              </button>
-            ))}
-          </div>
-        ))}
-      </div>
-    </section>
   );
 }
