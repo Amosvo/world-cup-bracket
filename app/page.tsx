@@ -499,11 +499,37 @@ export default function Home() {
       </section>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
-          <p className="text-sm text-neutral-400">Champion Pick</p>
+        <div className="rounded-2xl border border-yellow-500/40 bg-gradient-to-br from-yellow-500/10 via-neutral-900 to-amber-700/10 p-6">
+  <div className="flex items-center gap-3">
+    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/20 text-2xl">
+      🏆
+    </div>
 
-          <p className="text-2xl font-bold">{champion || "TBD"}</p>
-        </div>
+    <div>
+      <p className="text-xs uppercase tracking-[0.3em] text-yellow-400">
+        Champion Pick
+      </p>
+
+      <p className="text-sm text-neutral-400">Your predicted winner</p>
+    </div>
+  </div>
+
+  <div className="mt-6">
+    <p
+      className={`text-3xl font-bold md:text-4xl ${
+        champion ? "text-white" : "text-neutral-500"
+      }`}
+    >
+      {champion || "Select a Champion"}
+    </p>
+  </div>
+
+  {champion ? (
+    <div className="mt-4 inline-flex items-center rounded-full border border-yellow-500/30 bg-yellow-500/10 px-3 py-1 text-sm font-semibold text-yellow-300">
+      Predicted World Champion
+    </div>
+  ) : null}
+</div>
 
         <div
           id="submit"
