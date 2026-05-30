@@ -358,34 +358,42 @@ export default function Home() {
           </div>
 
           <a
-            href="#leaderboard"
-            className="rounded-xl border border-neutral-700 px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-neutral-800"
-          >
-            🏆 View Leaderboard
-          </a>
+  href="#leaderboard"
+  className="rounded-xl bg-gradient-to-r from-yellow-400 via-neutral-300 to-amber-700 px-5 py-3 text-center text-sm font-bold text-black transition hover:opacity-90"
+>
+  🏆 View Leaderboard
+</a>
         </div>
       </div>
 
       <section className="mb-6 flex flex-wrap gap-3">
-        <button
-          type="button"
-          onClick={autoSelectBracket}
-          className="rounded-full bg-neutral-800 px-4 py-2 text-sm font-bold text-white transition hover:bg-neutral-700"
-        >
-          Auto Select
-        </button>
+  <button
+    type="button"
+    onClick={autoSelectBracket}
+    className="rounded-full bg-neutral-800 px-4 py-2 text-sm font-bold text-white transition hover:bg-neutral-700"
+  >
+    Auto Select
+  </button>
 
-        <a
-          href="#submit"
-          className={`rounded-full px-4 py-2 text-sm font-bold transition ${
-            champion
-              ? "bg-white text-black hover:bg-neutral-200"
-              : "bg-neutral-800 text-white hover:bg-neutral-700"
-          }`}
-        >
-          Submit Bracket
-        </a>
-      </section>
+  <button
+    type="button"
+    onClick={resetBracket}
+    className="rounded-full border border-neutral-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-neutral-800"
+  >
+    Reset Bracket
+  </button>
+
+  <a
+    href="#submit"
+    className={`rounded-full px-4 py-2 text-sm font-bold transition ${
+      champion
+        ? "bg-white text-black hover:bg-neutral-200"
+        : "bg-neutral-800 text-white hover:bg-neutral-700"
+    }`}
+  >
+    Submit Bracket
+  </a>
+</section>
 
       <section className="md:hidden">
         <div className="mb-4 flex gap-2 overflow-x-auto pb-2">
@@ -572,13 +580,7 @@ export default function Home() {
                 {isSubmitting ? "Submitting..." : "Submit Bracket"}
               </button>
 
-              <button
-                type="button"
-                onClick={resetBracket}
-                className="mt-3 w-full rounded-xl border border-neutral-700 px-4 py-3 font-bold text-white transition hover:bg-neutral-800"
-              >
-                Reset Bracket
-              </button>
+            
             </>
           )}
         </div>
