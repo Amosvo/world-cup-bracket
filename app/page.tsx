@@ -83,6 +83,18 @@ function randomPick(match: string[]) {
   return match[Math.floor(Math.random() * match.length)];
 }
 
+function getTimeRemaining() {
+  const total = Math.max(0, SUBMISSION_DEADLINE.getTime() - new Date().getTime());
+
+  return {
+    total,
+    days: Math.floor(total / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((total / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((total / (1000 * 60)) % 60),
+    seconds: Math.floor((total / 1000) % 60),
+  };
+}
+
 export default function Home() {
   const [r32Winners, setR32Winners] = useState<string[]>(Array(16).fill(""));
   const [r16Winners, setR16Winners] = useState<string[]>(Array(8).fill(""));
@@ -99,20 +111,10 @@ export default function Home() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(true);
   const [mobileRound, setMobileRound] = useState<RoundKey>("r32");
+  const [timeLeft, setTimeLeft] = useState(getTimeRemaining());
 
-  const submissionsClosed = new Date() > SUBMISSION_DEADLINE;
-const now = new Date();
-const timeRemaining = SUBMISSION_DEADLINE.getTime() - now.getTime();
+  const submissionsClosed = timeLeft.total <= 0;
 
-const daysRemaining = Math.max(
-  0,
-  Math.floor(timeRemaining / (1000 * 60 * 60 * 24))
-);
-
-const hoursRemaining = Math.max(
-  0,
-  Math.floor((timeRemaining / (1000 * 60 * 60)) % 24)
-);
   async function loadLeaderboard() {
     try {
       setIsLoadingLeaderboard(true);
@@ -131,6 +133,12 @@ const hoursRemaining = Math.max(
 
   useEffect(() => {
     loadLeaderboard();
+
+    const timer = setInterval(() => {
+      setTimeLeft(getTimeRemaining());
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, []);
 
   if (submissionsClosed) {
@@ -308,41 +316,11 @@ const hoursRemaining = Math.max(
   ];
 
   const mobileRounds = [
-    {
-      key: "r32" as RoundKey,
-      title: "Round of 32",
-      matches: roundOf32,
-      winners: r32Winners,
-      meta: roundMeta.r32,
-    },
-    {
-      key: "r16" as RoundKey,
-      title: "Round of 16",
-      matches: r16Matches,
-      winners: r16Winners,
-      meta: roundMeta.r16,
-    },
-    {
-      key: "qf" as RoundKey,
-      title: "Quarterfinals",
-      matches: qfMatches,
-      winners: qfWinners,
-      meta: roundMeta.qf,
-    },
-    {
-      key: "sf" as RoundKey,
-      title: "Semifinals",
-      matches: sfMatches,
-      winners: sfWinners,
-      meta: roundMeta.sf,
-    },
-    {
-      key: "final" as RoundKey,
-      title: "Final",
-      matches: [finalMatch],
-      winners: [champion],
-      meta: roundMeta.final,
-    },
+    { key: "r32" as RoundKey, title: "Round of 32", matches: roundOf32, winners: r32Winners, meta: roundMeta.r32 },
+    { key: "r16" as RoundKey, title: "Round of 16", matches: r16Matches, winners: r16Winners, meta: roundMeta.r16 },
+    { key: "qf" as RoundKey, title: "Quarterfinals", matches: qfMatches, winners: qfWinners, meta: roundMeta.qf },
+    { key: "sf" as RoundKey, title: "Semifinals", matches: sfMatches, winners: sfWinners, meta: roundMeta.sf },
+    { key: "final" as RoundKey, title: "Final", matches: [finalMatch], winners: [champion], meta: roundMeta.final },
   ];
 
   const currentMobileRoundIndex = mobileRounds.findIndex(
@@ -369,66 +347,60 @@ const hoursRemaining = Math.max(
           </div>
 
           <a
-  href="#leaderboard"
-  className="rounded-xl bg-gradient-to-r from-yellow-400 via-neutral-300 to-amber-700 px-5 py-3 text-center text-sm font-bold text-black transition hover:opacity-90"
->
-  🏆 View Leaderboard
-</a>
+            href="#leaderboard"
+            className="rounded-xl bg-gradient-to-r from-yellow-400 via-neutral-300 to-amber-700 px-5 py-3 text-center text-sm font-bold text-black transition hover:opacity-90"
+          >
+            🏆 View Leaderboard
+          </a>
         </div>
       </div>
-<section className="mb-6 rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
-  <p className="text-xs uppercase tracking-[0.3em] text-neutral-400">
-    Submission Deadline
-  </p>
 
-  <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-    <div>
-      <h2 className="text-2xl font-bold">
-        June 27, 2026 at 11:59 PM
-      </h2>
+      <section className="mb-6 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500/5 via-neutral-900 to-amber-700/5 p-4">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <p className="text-lg font-semibold text-white">
+            Brackets close June 27 at 11:59 PM
+          </p>
 
-      <p className="mt-1 text-sm text-neutral-400">
-        Brackets can be submitted or updated until the deadline.
-      </p>
-    </div>
+          <div className="flex items-center gap-2 text-xl font-bold md:text-2xl">
+            <span>{timeLeft.days}d</span>
+            <span className="text-neutral-500">:</span>
+            <span>{timeLeft.hours}h</span>
+            <span className="text-neutral-500">:</span>
+            <span>{timeLeft.minutes}m</span>
+            <span className="text-neutral-500">:</span>
+            <span>{timeLeft.seconds}s</span>
+          </div>
+        </div>
+      </section>
 
-    <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-4 py-3 text-yellow-300">
-      <p className="text-sm font-semibold">Time Remaining</p>
-
-      <p className="text-2xl font-bold">
-        {daysRemaining}d {hoursRemaining}h
-      </p>
-    </div>
-  </div>
-</section>
       <section className="mb-6 flex flex-wrap gap-3">
-  <button
-    type="button"
-    onClick={autoSelectBracket}
-    className="rounded-full bg-neutral-800 px-4 py-2 text-sm font-bold text-white transition hover:bg-neutral-700"
-  >
-    Auto Select
-  </button>
+        <button
+          type="button"
+          onClick={autoSelectBracket}
+          className="rounded-full bg-neutral-800 px-4 py-2 text-sm font-bold text-white transition hover:bg-neutral-700"
+        >
+          Auto Select
+        </button>
 
-  <button
-    type="button"
-    onClick={resetBracket}
-    className="rounded-full border border-neutral-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-neutral-800"
-  >
-    Reset Bracket
-  </button>
+        <button
+          type="button"
+          onClick={resetBracket}
+          className="rounded-full border border-neutral-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-neutral-800"
+        >
+          Reset Bracket
+        </button>
 
-  <a
-    href="#submit"
-    className={`rounded-full px-4 py-2 text-sm font-bold transition ${
-      champion
-        ? "bg-white text-black hover:bg-neutral-200"
-        : "bg-neutral-800 text-white hover:bg-neutral-700"
-    }`}
-  >
-    Submit Bracket
-  </a>
-</section>
+        <a
+          href="#submit"
+          className={`rounded-full px-4 py-2 text-sm font-bold transition ${
+            champion
+              ? "bg-white text-black hover:bg-neutral-200"
+              : "bg-neutral-800 text-white hover:bg-neutral-700"
+          }`}
+        >
+          Submit Bracket
+        </a>
+      </section>
 
       <section className="md:hidden">
         <div className="mb-4 flex gap-2 overflow-x-auto pb-2">
@@ -485,166 +457,30 @@ const hoursRemaining = Math.max(
       <section className="hidden md:block">
         <div className="overflow-x-auto">
           <div className="grid min-w-[1600px] grid-cols-5 items-center gap-16">
-            <Round
-              title="Round of 32"
-              matches={roundOf32}
-              winners={r32Winners}
-              roundKey="r32"
-              meta={roundMeta.r32}
-              onPick={pickWinner}
-            />
-
-            <Round
-              title="Round of 16"
-              matches={r16Matches}
-              winners={r16Winners}
-              roundKey="r16"
-              meta={roundMeta.r16}
-              onPick={pickWinner}
-            />
-
-            <Round
-              title="Quarterfinals"
-              matches={qfMatches}
-              winners={qfWinners}
-              roundKey="qf"
-              meta={roundMeta.qf}
-              onPick={pickWinner}
-            />
-
-            <Round
-              title="Semifinals"
-              matches={sfMatches}
-              winners={sfWinners}
-              roundKey="sf"
-              meta={roundMeta.sf}
-              onPick={pickWinner}
-            />
-
-            <Round
-              title="Final"
-              matches={[finalMatch]}
-              winners={[champion]}
-              roundKey="final"
-              meta={roundMeta.final}
-              onPick={pickWinner}
-            />
+            <Round title="Round of 32" matches={roundOf32} winners={r32Winners} roundKey="r32" meta={roundMeta.r32} onPick={pickWinner} />
+            <Round title="Round of 16" matches={r16Matches} winners={r16Winners} roundKey="r16" meta={roundMeta.r16} onPick={pickWinner} />
+            <Round title="Quarterfinals" matches={qfMatches} winners={qfWinners} roundKey="qf" meta={roundMeta.qf} onPick={pickWinner} />
+            <Round title="Semifinals" matches={sfMatches} winners={sfWinners} roundKey="sf" meta={roundMeta.sf} onPick={pickWinner} />
+            <Round title="Final" matches={[finalMatch]} winners={[champion]} roundKey="final" meta={roundMeta.final} onPick={pickWinner} />
           </div>
         </div>
       </section>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-yellow-500/40 bg-gradient-to-br from-yellow-500/10 via-neutral-900 to-amber-700/10 p-6">
-  <div className="flex items-center gap-3">
-    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/20 text-2xl">
-      🏆
-    </div>
+        <ChampionCard champion={champion} />
 
-    <div>
-      <p className="text-xs uppercase tracking-[0.3em] text-yellow-400">
-        Champion Pick
-      </p>
-
-      <p className="text-sm text-neutral-400">Your predicted winner</p>
-    </div>
-  </div>
-
-  <div className="mt-6">
-    <p
-      className={`text-3xl font-bold md:text-4xl ${
-        champion ? "text-white" : "text-neutral-500"
-      }`}
-    >
-      {champion || "Select a Champion"}
-    </p>
-  </div>
-
-  {champion ? (
-    <div className="mt-4 inline-flex items-center rounded-full border border-yellow-500/30 bg-yellow-500/10 px-3 py-1 text-sm font-semibold text-yellow-300">
-      Predicted World Champion
-    </div>
-  ) : null}
-</div>
-
-        <div
-          id="submit"
-          className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5"
-        >
-          {submitted ? (
-            <div>
-              <p className="mb-2 text-sm uppercase tracking-[0.3em] text-neutral-400">
-                Submission Received
-              </p>
-
-              <h2 className="text-2xl font-bold">Bracket Submitted</h2>
-
-              <div className="mt-5 rounded-xl bg-white p-5 text-black">
-                <p className="text-sm text-neutral-500">Name</p>
-
-                <p className="text-lg font-bold">{name}</p>
-
-                <p className="mt-4 text-sm text-neutral-500">Champion Pick</p>
-
-                <p className="text-lg font-bold">{champion}</p>
-              </div>
-
-              <p className="mt-4 text-sm text-neutral-400">
-                Thank you for participating in the World Cup Knockout Challenge.
-              </p>
-
-              <button
-                type="button"
-                onClick={() => setSubmitted(false)}
-                className="mt-4 w-full rounded-xl border border-neutral-700 px-4 py-3 font-bold text-white transition hover:bg-neutral-800"
-              >
-                Edit Bracket
-              </button>
-            </div>
-          ) : (
-            <>
-              <h2 className="mb-4 text-xl font-bold">Submit Your Bracket</h2>
-
-              <div className="mb-4">
-                <label className="mb-2 block text-sm text-neutral-400">
-                  Name / Nickname
-                </label>
-
-                <input
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-3 text-white"
-                  placeholder="Enter your name"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="mb-2 block text-sm text-neutral-400">
-                  Email
-                </label>
-
-                <input
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-3 text-white"
-                  placeholder="you@example.com"
-                />
-              </div>
-
-              {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
-
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="w-full rounded-xl bg-white px-4 py-3 font-bold text-black transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isSubmitting ? "Submitting..." : "Submit Bracket"}
-              </button>
-
-            
-            </>
-          )}
-        </div>
+        <SubmitCard
+          submitted={submitted}
+          name={name}
+          email={email}
+          champion={champion}
+          error={error}
+          isSubmitting={isSubmitting}
+          setSubmitted={setSubmitted}
+          setName={setName}
+          setEmail={setEmail}
+          handleSubmit={handleSubmit}
+        />
       </div>
 
       <section
@@ -660,8 +496,7 @@ const hoursRemaining = Math.max(
             <h2 className="mt-2 text-2xl font-bold">Current Top 3</h2>
 
             <p className="mt-2 text-neutral-400">
-              Standings pull from Notion and update when Total Points are
-              updated.
+              Standings pull from Notion and update when Total Points are updated.
             </p>
           </div>
 
@@ -683,13 +518,143 @@ const hoursRemaining = Math.max(
   );
 }
 
-function MatchHeader({
-  meta,
-  index,
+function ChampionCard({ champion }: { champion: string }) {
+  return (
+    <div className="rounded-2xl border border-yellow-500/40 bg-gradient-to-br from-yellow-500/10 via-neutral-900 to-amber-700/10 p-6">
+      <div className="flex items-center gap-3">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/20 text-2xl">
+          🏆
+        </div>
+
+        <div>
+          <p className="text-xs uppercase tracking-[0.3em] text-yellow-400">
+            Champion Pick
+          </p>
+
+          <p className="text-sm text-neutral-400">Your predicted winner</p>
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <p
+          className={`text-3xl font-bold md:text-4xl ${
+            champion ? "text-white" : "text-neutral-500"
+          }`}
+        >
+          {champion || "Select a Champion"}
+        </p>
+      </div>
+
+      {champion ? (
+        <div className="mt-4 inline-flex items-center rounded-full border border-yellow-500/30 bg-yellow-500/10 px-3 py-1 text-sm font-semibold text-yellow-300">
+          Predicted World Champion
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function SubmitCard({
+  submitted,
+  name,
+  email,
+  champion,
+  error,
+  isSubmitting,
+  setSubmitted,
+  setName,
+  setEmail,
+  handleSubmit,
 }: {
-  meta: MatchMeta[];
-  index: number;
+  submitted: boolean;
+  name: string;
+  email: string;
+  champion: string;
+  error: string;
+  isSubmitting: boolean;
+  setSubmitted: (value: boolean) => void;
+  setName: (value: string) => void;
+  setEmail: (value: string) => void;
+  handleSubmit: () => void;
 }) {
+  return (
+    <div
+      id="submit"
+      className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5"
+    >
+      {submitted ? (
+        <div>
+          <p className="mb-2 text-sm uppercase tracking-[0.3em] text-neutral-400">
+            Submission Received
+          </p>
+
+          <h2 className="text-2xl font-bold">Bracket Submitted</h2>
+
+          <div className="mt-5 rounded-xl bg-white p-5 text-black">
+            <p className="text-sm text-neutral-500">Name</p>
+            <p className="text-lg font-bold">{name}</p>
+
+            <p className="mt-4 text-sm text-neutral-500">Champion Pick</p>
+            <p className="text-lg font-bold">{champion}</p>
+          </div>
+
+          <p className="mt-4 text-sm text-neutral-400">
+            Thank you for participating in the World Cup Knockout Challenge.
+          </p>
+
+          <button
+            type="button"
+            onClick={() => setSubmitted(false)}
+            className="mt-4 w-full rounded-xl border border-neutral-700 px-4 py-3 font-bold text-white transition hover:bg-neutral-800"
+          >
+            Edit Bracket
+          </button>
+        </div>
+      ) : (
+        <>
+          <h2 className="mb-4 text-xl font-bold">Submit Your Bracket</h2>
+
+          <div className="mb-4">
+            <label className="mb-2 block text-sm text-neutral-400">
+              Name / Nickname
+            </label>
+
+            <input
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-3 text-white"
+              placeholder="Enter your name"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="mb-2 block text-sm text-neutral-400">Email</label>
+
+            <input
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-3 text-white"
+              placeholder="you@example.com"
+            />
+          </div>
+
+          {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
+
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="w-full rounded-xl bg-white px-4 py-3 font-bold text-black transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSubmitting ? "Submitting..." : "Submit Bracket"}
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function MatchHeader({ meta, index }: { meta: MatchMeta[]; index: number }) {
   return (
     <div className="mb-3 flex items-center justify-between gap-3">
       <p className="text-xs uppercase tracking-widest text-neutral-500">
@@ -907,9 +872,7 @@ function FullLeaderboardView({
             >
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm text-neutral-400">
-                    Rank #{index + 1}
-                  </p>
+                  <p className="text-sm text-neutral-400">Rank #{index + 1}</p>
 
                   <h2 className="text-2xl font-bold">
                     {index === 0
