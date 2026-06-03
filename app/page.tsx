@@ -408,34 +408,36 @@ export default function Home() {
   </p>
 </section>
 
-      <section className="mb-6 flex flex-wrap gap-3">
-        <button
-          type="button"
-          onClick={autoSelectBracket}
-          className="rounded-full bg-neutral-800 px-4 py-2 text-sm font-bold text-white transition hover:bg-neutral-700"
-        >
-          Auto Select
-        </button>
+<section className="mb-6 rounded-2xl border border-neutral-300/25 bg-neutral-200/5 p-4">
+  <div className="flex flex-wrap items-center justify-center gap-3">
+    <button
+      type="button"
+      onClick={autoSelectBracket}
+      className="rounded-full bg-neutral-800 px-5 py-2 text-sm font-bold text-white transition hover:bg-neutral-700"
+    >
+      Auto Select
+    </button>
 
-        <button
-          type="button"
-          onClick={resetBracket}
-          className="rounded-full border border-neutral-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-neutral-800"
-        >
-          Reset Bracket
-        </button>
+    <button
+      type="button"
+      onClick={resetBracket}
+      className="rounded-full border border-neutral-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-neutral-800"
+    >
+      Reset Bracket
+    </button>
 
-        <a
-          href="#submit"
-          className={`rounded-full px-4 py-2 text-sm font-bold transition ${
-            champion
-              ? "bg-white text-black hover:bg-neutral-200"
-              : "bg-neutral-800 text-white hover:bg-neutral-700"
-          }`}
-        >
-          Submit Bracket
-        </a>
-      </section>
+    <a
+      href="#submit"
+      className={`rounded-full px-5 py-2 text-sm font-bold transition ${
+        champion
+          ? "bg-white text-black hover:bg-neutral-200"
+          : "bg-neutral-800 text-white hover:bg-neutral-700"
+      }`}
+    >
+      Submit Bracket
+    </a>
+  </div>
+</section>
 
       <section className="md:hidden">
         <div className="mb-4 flex gap-2 overflow-x-auto pb-2">
