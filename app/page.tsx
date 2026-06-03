@@ -395,49 +395,49 @@ export default function Home() {
       </div>
 
       <section className="mb-6 rounded-2xl border border-yellow-500/40 bg-gradient-to-br from-yellow-500/20 via-neutral-900 to-amber-700/20 p-5 text-center shadow-[0_0_24px_rgba(234,179,8,0.14)]">
-  <p className="text-xs font-bold uppercase tracking-[0.24em] text-yellow-400">
-    Submission Deadline
-  </p>
+        <p className="text-xs font-bold uppercase tracking-[0.24em] text-yellow-400">
+          Submission Deadline
+        </p>
 
-  <p className="mt-2 text-lg font-semibold text-white">
-    June 27, 2026 • 11:59 PM CDT
-  </p>
+        <p className="mt-2 text-lg font-semibold text-white">
+          June 27, 2026 • 11:59 PM CDT
+        </p>
 
-  <p className="mt-4 whitespace-nowrap text-4xl font-black tracking-tight text-yellow-300">
-    {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
-  </p>
-</section>
+        <p className="mt-4 whitespace-nowrap text-4xl font-black tracking-tight text-yellow-300">
+          {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
+        </p>
+      </section>
 
-<section className="mb-6 rounded-2xl border border-neutral-300/25 bg-neutral-200/5 p-4">
-  <div className="flex flex-wrap items-center justify-center gap-3">
-    <button
-      type="button"
-      onClick={autoSelectBracket}
-      className="rounded-full bg-neutral-800 px-5 py-2 text-sm font-bold text-white transition hover:bg-neutral-700"
-    >
-      Auto Select
-    </button>
+      <section className="mb-6 rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 via-neutral-900 to-amber-700/10 p-3">
+        <div className="flex flex-nowrap items-center justify-center gap-2 overflow-x-auto">
+          <button
+            type="button"
+            onClick={autoSelectBracket}
+            className="shrink-0 rounded-full bg-neutral-800 px-4 py-2 text-xs font-bold text-white transition hover:bg-neutral-700 sm:text-sm"
+          >
+            Auto Select
+          </button>
 
-    <button
-      type="button"
-      onClick={resetBracket}
-      className="rounded-full border border-neutral-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-neutral-800"
-    >
-      Reset Bracket
-    </button>
+          <button
+            type="button"
+            onClick={resetBracket}
+            className="shrink-0 rounded-full border border-yellow-500/30 bg-neutral-900 px-4 py-2 text-xs font-bold text-white transition hover:bg-neutral-800 sm:text-sm"
+          >
+            Reset Bracket
+          </button>
 
-    <a
-      href="#submit"
-      className={`rounded-full px-5 py-2 text-sm font-bold transition ${
-        champion
-          ? "bg-white text-black hover:bg-neutral-200"
-          : "bg-neutral-800 text-white hover:bg-neutral-700"
-      }`}
-    >
-      Submit Bracket
-    </a>
-  </div>
-</section>
+          <a
+            href="#submit"
+            className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition sm:text-sm ${
+              champion
+                ? "bg-white text-black hover:bg-neutral-200"
+                : "bg-neutral-800 text-white hover:bg-neutral-700"
+            }`}
+          >
+            Submit Bracket
+          </a>
+        </div>
+      </section>
 
       <section className="md:hidden">
         <div className="mb-4 flex gap-2 overflow-x-auto pb-2">
