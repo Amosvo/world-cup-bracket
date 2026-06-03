@@ -101,7 +101,18 @@ export default function Home() {
   const [mobileRound, setMobileRound] = useState<RoundKey>("r32");
 
   const submissionsClosed = new Date() > SUBMISSION_DEADLINE;
+const now = new Date();
+const timeRemaining = SUBMISSION_DEADLINE.getTime() - now.getTime();
 
+const daysRemaining = Math.max(
+  0,
+  Math.floor(timeRemaining / (1000 * 60 * 60 * 24))
+);
+
+const hoursRemaining = Math.max(
+  0,
+  Math.floor((timeRemaining / (1000 * 60 * 60)) % 24)
+);
   async function loadLeaderboard() {
     try {
       setIsLoadingLeaderboard(true);
@@ -365,7 +376,31 @@ export default function Home() {
 </a>
         </div>
       </div>
+<section className="mb-6 rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
+  <p className="text-xs uppercase tracking-[0.3em] text-neutral-400">
+    Submission Deadline
+  </p>
 
+  <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+    <div>
+      <h2 className="text-2xl font-bold">
+        June 27, 2026 at 11:59 PM
+      </h2>
+
+      <p className="mt-1 text-sm text-neutral-400">
+        Brackets can be submitted or updated until the deadline.
+      </p>
+    </div>
+
+    <div className="rounded-xl border border-yellow-500/40 bg-yellow-500/10 px-4 py-3 text-yellow-300">
+      <p className="text-sm font-semibold">Time Remaining</p>
+
+      <p className="text-2xl font-bold">
+        {daysRemaining}d {hoursRemaining}h
+      </p>
+    </div>
+  </div>
+</section>
       <section className="mb-6 flex flex-wrap gap-3">
   <button
     type="button"
