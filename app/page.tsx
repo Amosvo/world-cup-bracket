@@ -84,14 +84,16 @@ function randomPick(match: string[]) {
 }
 
 function getTimeRemaining() {
-  const total = Math.max(0, SUBMISSION_DEADLINE.getTime() - new Date().getTime());
+  const total = Math.max(
+    0,
+    SUBMISSION_DEADLINE.getTime() - new Date().getTime()
+  );
 
   return {
     total,
     days: Math.floor(total / (1000 * 60 * 60 * 24)),
     hours: Math.floor((total / (1000 * 60 * 60)) % 24),
     minutes: Math.floor((total / (1000 * 60)) % 60),
-    seconds: Math.floor((total / 1000) % 60),
   };
 }
 
@@ -133,6 +135,7 @@ export default function Home() {
 
   useEffect(() => {
     loadLeaderboard();
+    setTimeLeft(getTimeRemaining());
 
     const timer = setInterval(() => {
       setTimeLeft(getTimeRemaining());
@@ -273,6 +276,12 @@ export default function Home() {
       if (data.success) {
         setSubmitted(true);
         loadLeaderboard();
+
+        setTimeout(() => {
+          document
+            .getElementById("submit")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
       } else {
         setError(data.error || "Failed to submit bracket.");
       }
@@ -316,11 +325,41 @@ export default function Home() {
   ];
 
   const mobileRounds = [
-    { key: "r32" as RoundKey, title: "Round of 32", matches: roundOf32, winners: r32Winners, meta: roundMeta.r32 },
-    { key: "r16" as RoundKey, title: "Round of 16", matches: r16Matches, winners: r16Winners, meta: roundMeta.r16 },
-    { key: "qf" as RoundKey, title: "Quarterfinals", matches: qfMatches, winners: qfWinners, meta: roundMeta.qf },
-    { key: "sf" as RoundKey, title: "Semifinals", matches: sfMatches, winners: sfWinners, meta: roundMeta.sf },
-    { key: "final" as RoundKey, title: "Final", matches: [finalMatch], winners: [champion], meta: roundMeta.final },
+    {
+      key: "r32" as RoundKey,
+      title: "Round of 32",
+      matches: roundOf32,
+      winners: r32Winners,
+      meta: roundMeta.r32,
+    },
+    {
+      key: "r16" as RoundKey,
+      title: "Round of 16",
+      matches: r16Matches,
+      winners: r16Winners,
+      meta: roundMeta.r16,
+    },
+    {
+      key: "qf" as RoundKey,
+      title: "Quarterfinals",
+      matches: qfMatches,
+      winners: qfWinners,
+      meta: roundMeta.qf,
+    },
+    {
+      key: "sf" as RoundKey,
+      title: "Semifinals",
+      matches: sfMatches,
+      winners: sfWinners,
+      meta: roundMeta.sf,
+    },
+    {
+      key: "final" as RoundKey,
+      title: "Final",
+      matches: [finalMatch],
+      winners: [champion],
+      meta: roundMeta.final,
+    },
   ];
 
   const currentMobileRoundIndex = mobileRounds.findIndex(
@@ -355,23 +394,19 @@ export default function Home() {
         </div>
       </div>
 
-      <section className="mb-6 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500/5 via-neutral-900 to-amber-700/5 p-4">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <p className="text-lg font-semibold text-white">
-            Brackets close June 27 at 11:59 PM
-          </p>
+      <section className="mb-6 rounded-2xl border border-yellow-500/40 bg-gradient-to-br from-yellow-500/20 via-neutral-900 to-amber-700/20 p-5 text-center shadow-[0_0_24px_rgba(234,179,8,0.14)]">
+  <p className="text-xs font-bold uppercase tracking-[0.24em] text-yellow-400">
+    Submission Deadline
+  </p>
 
-          <div className="flex items-center gap-2 text-xl font-bold md:text-2xl">
-            <span>{timeLeft.days}d</span>
-            <span className="text-neutral-500">:</span>
-            <span>{timeLeft.hours}h</span>
-            <span className="text-neutral-500">:</span>
-            <span>{timeLeft.minutes}m</span>
-            <span className="text-neutral-500">:</span>
-            <span>{timeLeft.seconds}s</span>
-          </div>
-        </div>
-      </section>
+  <p className="mt-2 text-lg font-semibold text-white">
+    June 27, 2026 • 11:59 PM CDT
+  </p>
+
+  <p className="mt-4 whitespace-nowrap text-4xl font-black tracking-tight text-yellow-300">
+    {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
+  </p>
+</section>
 
       <section className="mb-6 flex flex-wrap gap-3">
         <button
@@ -457,11 +492,50 @@ export default function Home() {
       <section className="hidden md:block">
         <div className="overflow-x-auto">
           <div className="grid min-w-[1600px] grid-cols-5 items-center gap-16">
-            <Round title="Round of 32" matches={roundOf32} winners={r32Winners} roundKey="r32" meta={roundMeta.r32} onPick={pickWinner} />
-            <Round title="Round of 16" matches={r16Matches} winners={r16Winners} roundKey="r16" meta={roundMeta.r16} onPick={pickWinner} />
-            <Round title="Quarterfinals" matches={qfMatches} winners={qfWinners} roundKey="qf" meta={roundMeta.qf} onPick={pickWinner} />
-            <Round title="Semifinals" matches={sfMatches} winners={sfWinners} roundKey="sf" meta={roundMeta.sf} onPick={pickWinner} />
-            <Round title="Final" matches={[finalMatch]} winners={[champion]} roundKey="final" meta={roundMeta.final} onPick={pickWinner} />
+            <Round
+              title="Round of 32"
+              matches={roundOf32}
+              winners={r32Winners}
+              roundKey="r32"
+              meta={roundMeta.r32}
+              onPick={pickWinner}
+            />
+
+            <Round
+              title="Round of 16"
+              matches={r16Matches}
+              winners={r16Winners}
+              roundKey="r16"
+              meta={roundMeta.r16}
+              onPick={pickWinner}
+            />
+
+            <Round
+              title="Quarterfinals"
+              matches={qfMatches}
+              winners={qfWinners}
+              roundKey="qf"
+              meta={roundMeta.qf}
+              onPick={pickWinner}
+            />
+
+            <Round
+              title="Semifinals"
+              matches={sfMatches}
+              winners={sfWinners}
+              roundKey="sf"
+              meta={roundMeta.sf}
+              onPick={pickWinner}
+            />
+
+            <Round
+              title="Final"
+              matches={[finalMatch]}
+              winners={[champion]}
+              roundKey="final"
+              meta={roundMeta.final}
+              onPick={pickWinner}
+            />
           </div>
         </div>
       </section>
@@ -496,7 +570,8 @@ export default function Home() {
             <h2 className="mt-2 text-2xl font-bold">Current Top 3</h2>
 
             <p className="mt-2 text-neutral-400">
-              Standings pull from Notion and update when Total Points are updated.
+              Standings pull from Notion and update when Total Points are
+              updated.
             </p>
           </div>
 
@@ -620,6 +695,8 @@ function SubmitCard({
             </label>
 
             <input
+              type="text"
+              autoComplete="name"
               value={name}
               onChange={(event) => setName(event.target.value)}
               className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-3 text-white"
@@ -631,6 +708,8 @@ function SubmitCard({
             <label className="mb-2 block text-sm text-neutral-400">Email</label>
 
             <input
+              type="email"
+              autoComplete="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-3 text-white"
