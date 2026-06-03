@@ -873,13 +873,13 @@ function LeaderboardGrid({
       {leaderboard.map((entry, index) => (
         <div
           key={entry.id}
-          className={`rounded-xl border p-4 ${
-            index === 0
-              ? "border-yellow-400"
-              : index === 1
-                ? "border-neutral-300"
-                : "border-amber-700"
-          }`}
+          className={`rounded-xl border p-4 transition-all ${
+  index === 0
+    ? "border-yellow-400 bg-gradient-to-br from-yellow-500/20 via-neutral-900 to-yellow-700/10"
+    : index === 1
+      ? "border-neutral-300 bg-gradient-to-br from-neutral-300/20 via-neutral-900 to-neutral-500/10"
+      : "border-amber-700 bg-gradient-to-br from-amber-700/20 via-neutral-900 to-orange-900/10"
+}`}
         >
           <p className="text-2xl">
             {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
