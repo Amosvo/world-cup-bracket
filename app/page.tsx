@@ -116,7 +116,6 @@ export default function Home() {
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining());
 
   const submissionsClosed = timeLeft.total <= 0;
-const submissionsClosed = timeLeft.total <= 0;
 
 const totalPicks = 31;
 
