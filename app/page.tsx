@@ -419,7 +419,8 @@ const completionPercent = Math.round(
           {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
         </p>
       </section>
-<section className="mb-6">
+<section className="sticky top-0 z-40 mb-6 rounded-b-2xl border-b border-yellow-500/30 bg-neutral-950/95 px-1 pb-3 pt-3 backdrop-blur">
+<div className="sticky top-0 z-50 -mx-4 mb-6 border-y border-yellow-500/30 bg-neutral-950/95 px-4 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.35)] backdrop-blur md:-mx-6 md:px-6">
   <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-neutral-400">
     <span>Bracket Progress</span>
     <span>{completedPicks}/31</span>
@@ -431,6 +432,7 @@ const completionPercent = Math.round(
       style={{ width: `${completionPercent}%` }}
     />
   </div>
+</div>
 </section>
       <section className="mb-6 rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 via-neutral-900 to-amber-700/10 p-3">
         <div className="flex flex-nowrap items-center justify-center gap-2 overflow-x-auto">
