@@ -116,7 +116,20 @@ export default function Home() {
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining());
 
   const submissionsClosed = timeLeft.total <= 0;
+const submissionsClosed = timeLeft.total <= 0;
 
+const totalPicks = 31;
+
+const completedPicks =
+  r32Winners.filter(Boolean).length +
+  r16Winners.filter(Boolean).length +
+  qfWinners.filter(Boolean).length +
+  sfWinners.filter(Boolean).length +
+  (champion ? 1 : 0);
+
+const completionPercent = Math.round(
+  (completedPicks / totalPicks) * 100
+);
   async function loadLeaderboard() {
     try {
       setIsLoadingLeaderboard(true);
@@ -407,7 +420,19 @@ export default function Home() {
           {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
         </p>
       </section>
+<section className="mb-6">
+  <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-neutral-400">
+    <span>Bracket Progress</span>
+    <span>{completedPicks}/31</span>
+  </div>
 
+  <div className="h-2 overflow-hidden rounded-full bg-neutral-800">
+    <div
+      className="h-full rounded-full bg-gradient-to-r from-yellow-400 via-neutral-300 to-amber-700 transition-all duration-300"
+      style={{ width: `${completionPercent}%` }}
+    />
+  </div>
+</section>
       <section className="mb-6 rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 via-neutral-900 to-amber-700/10 p-3">
         <div className="flex flex-nowrap items-center justify-center gap-2 overflow-x-auto">
           <button
@@ -819,17 +844,29 @@ function Round({
 
       <div className="flex flex-col gap-10">
         {matches.map((match, index) => (
-          <div
-            key={`${roundKey}-${index}`}
-            className={`rounded-2xl border border-neutral-800 bg-neutral-900 p-5 transition ${
-              title === "Final"
-                ? "scale-110 border-white"
-                : title === "Semifinals"
-                  ? "scale-105"
-                  : ""
-            }`}
-          >
-            <MatchHeader meta={meta} index={index} />
+         <div
+  key={`${roundKey}-${index}`}
+  className={`relative rounded-2xl border border-neutral-800 bg-neutral-900 p-5 transition ${
+    title === "Final"
+      ? "scale-110 border-white"
+      : title === "Semifinals"
+        ? "scale-105"
+        : ""
+  }`}
+>
+  {title !== "Final" && (
+    <>
+      <div className="absolute -right-8 top-1/2 hidden h-[2px] w-8 -translate-y-1/2 bg-gradient-to-r from-neutral-500 to-neutral-700 lg:block" />
+
+      {index % 2 === 0 ? (
+        <div className="absolute -right-8 top-1/2 hidden h-[calc(100%+40px)] w-[2px] bg-gradient-to-b from-neutral-500 to-neutral-700 lg:block" />
+      ) : (
+        <div className="absolute -right-8 bottom-1/2 hidden h-[calc(100%+40px)] w-[2px] bg-gradient-to-b from-neutral-500 to-neutral-700 lg:block" />
+      )}
+    </>
+  )}
+
+  <MatchHeader meta={meta} index={index} />
 
             {match.map((team, teamIndex) => (
               <button
