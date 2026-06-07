@@ -420,8 +420,8 @@ const completionPercent = Math.round(
         </p>
       </section>
 <section className="sticky top-0 z-40 mb-6 rounded-b-2xl border-b border-yellow-500/30 bg-neutral-950/95 px-1 pb-3 pt-3 backdrop-blur">
-<div className="sticky top-0 z-50 -mx-4 mb-6 border-y border-yellow-500/30 bg-neutral-950/95 px-4 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.35)] backdrop-blur md:-mx-6 md:px-6">
-  <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-neutral-400">
+<div className="sticky top-0 z-50 mb-6 bg-neutral-950/95 py-3 backdrop-blur">
+  <div className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
     <span>Bracket Progress</span>
     <span>{completedPicks}/31</span>
   </div>
