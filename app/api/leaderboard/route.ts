@@ -1,8 +1,22 @@
-import { Client } from "@notionhq/client";
+type NotionLeaderboardPage = {
+  id: string;
+  properties: {
+    Name?: {
+      title?: { plain_text?: string }[];
+    };
+    Champion?: {
+      rich_text?: { plain_text?: string }[];
+    };
+    "Total Points"?: {
+      number?: number | null;
+    };
+  };
+};
 
-const notion = new Client({
-  auth: process.env.NOTION_TOKEN,
-});
+type NotionLeaderboardResponse = {
+  message?: string;
+  results?: NotionLeaderboardPage[];
+};
 
 export async function GET() {
   try {
@@ -31,14 +45,14 @@ export async function GET() {
       }
     );
 
-    const data = await response.json();
+    const data = (await response.json()) as NotionLeaderboardResponse;
 
     if (!response.ok) {
       console.error("LEADERBOARD NOTION API ERROR:", data);
       throw new Error(data.message || "Failed to fetch leaderboard");
     }
 
-    const leaderboard = data.results.map((page: any) => {
+    const leaderboard = (data.results || []).map((page) => {
       const properties = page.properties;
 
       return {

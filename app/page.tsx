@@ -117,18 +117,16 @@ export default function Home() {
 
   const submissionsClosed = timeLeft.total <= 0;
 
-const totalPicks = 31;
+  const totalPicks = 31;
 
-const completedPicks =
-  r32Winners.filter(Boolean).length +
-  r16Winners.filter(Boolean).length +
-  qfWinners.filter(Boolean).length +
-  sfWinners.filter(Boolean).length +
-  (champion ? 1 : 0);
+  const completedPicks =
+    r32Winners.filter(Boolean).length +
+    r16Winners.filter(Boolean).length +
+    qfWinners.filter(Boolean).length +
+    sfWinners.filter(Boolean).length +
+    (champion ? 1 : 0);
 
-const completionPercent = Math.round(
-  (completedPicks / totalPicks) * 100
-);
+  const completionPercent = Math.round((completedPicks / totalPicks) * 100);
   async function loadLeaderboard() {
     try {
       setIsLoadingLeaderboard(true);
@@ -146,14 +144,32 @@ const completionPercent = Math.round(
   }
 
   useEffect(() => {
-    loadLeaderboard();
-    setTimeLeft(getTimeRemaining());
+    let isMounted = true;
+
+    fetch("/api/leaderboard")
+      .then((response) => response.json())
+      .then((data) => {
+        if (isMounted && data.success) {
+          setLeaderboard(data.leaderboard);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load leaderboard:", error);
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoadingLeaderboard(false);
+        }
+      });
 
     const timer = setInterval(() => {
       setTimeLeft(getTimeRemaining());
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => {
+      isMounted = false;
+      clearInterval(timer);
+    };
   }, []);
 
   if (submissionsClosed) {
@@ -380,108 +396,134 @@ const completionPercent = Math.round(
   const currentMobileRound = mobileRounds[currentMobileRoundIndex];
 
   return (
-    <main className="min-h-screen bg-neutral-950 p-4 text-white md:p-6">
-      <div className="mb-6 md:mb-8">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <main className="min-h-screen bg-[#dfe5df] text-[#071007] md:bg-[#071007] md:text-white">
+      <header className="bg-[#062207] px-5 pb-7 pt-5 text-white md:px-8 md:pb-8">
+        <div className="mx-auto max-w-[1800px]">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="grid h-16 w-16 shrink-0 place-items-center rounded-[1.4rem] bg-white/10 shadow-inner ring-1 ring-white/15 md:h-20 md:w-20">
+                <div className="grid h-11 w-11 place-items-center rounded-full bg-[conic-gradient(from_20deg,#f2673a_0_17%,#eef0e8_17%_35%,#a5aaa2_35%_52%,#1b9fcb_52%_70%,#13b37f_70%_86%,#eef0e8_86%_100%)] shadow-[0_10px_24px_rgba(0,0,0,0.35)] md:h-14 md:w-14">
+                  <div className="h-5 w-5 rounded-full bg-[#062207] md:h-6 md:w-6" />
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#f5c84b]">
+                  2026
+                </p>
+                <h1 className="text-[2.65rem] font-black leading-none tracking-normal md:text-7xl">
+                  World Cup
+                </h1>
+              </div>
+            </div>
+
+            <a
+              href="#leaderboard"
+              className="hidden rounded-full bg-white px-5 py-3 text-sm font-black text-[#071007] shadow-[0_10px_24px_rgba(0,0,0,0.24)] transition hover:bg-[#f5c84b] sm:inline-flex"
+            >
+              Leaderboard
+            </a>
+          </div>
+
+          <div className="mt-6 grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-white/55">
+                Knockout Challenge
+              </p>
+              <p className="mt-1 max-w-2xl text-sm font-medium text-white/75 md:text-base">
+                Pick every knockout winner before the bracket locks.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-[#f5c84b]/35 bg-black/[0.18] p-4 shadow-[0_18px_44px_rgba(0,0,0,0.18)]">
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f5c84b]">
+                Deadline
+              </p>
+              <p className="mt-1 text-sm font-bold text-white">
+                Jun 27, 2026 at 11:59 PM CDT
+              </p>
+              <p
+                suppressHydrationWarning
+                className="mt-2 text-3xl font-black leading-none text-white"
+              >
+                {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
+              </p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="sticky top-0 z-40 border-b border-black/10 bg-[#eef2ec]/[0.92] px-4 py-3 shadow-[0_12px_28px_rgba(0,0,0,0.12)] backdrop-blur md:border-[#f5c84b]/20 md:bg-[#071007]/[0.92] md:px-8">
+        <div className="mx-auto flex max-w-[1800px] flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0 flex-1">
+            <div className="mb-2 flex items-center justify-between text-[11px] font-black uppercase tracking-[0.16em] text-[#314134] md:text-white/55">
+              <span>Bracket Progress</span>
+              <span>{completedPicks}/31</span>
+            </div>
+
+            <div className="h-2 overflow-hidden rounded-full bg-black/10 md:bg-white/10">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[#f5c84b] via-white to-[#b8872d] transition-all duration-300"
+                style={{ width: `${completionPercent}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-2 overflow-x-auto">
+            <button
+              type="button"
+              onClick={autoSelectBracket}
+              className="shrink-0 rounded-full bg-[#09290b] px-4 py-2 text-xs font-black text-white shadow-sm transition hover:bg-[#0f3a12] md:bg-white/10"
+            >
+              Auto Select
+            </button>
+
+            <button
+              type="button"
+              onClick={resetBracket}
+              className="shrink-0 rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-black text-[#071007] shadow-sm transition hover:bg-[#f5c84b] md:border-white/15"
+            >
+              Reset
+            </button>
+
+            <a
+              href="#submit"
+              className={`shrink-0 rounded-full px-4 py-2 text-xs font-black shadow-sm transition ${
+                champion
+                  ? "bg-[#f5c84b] text-[#071007] hover:bg-white"
+                  : "bg-[#071007] text-white hover:bg-[#18351b] md:bg-white md:text-[#071007]"
+              }`}
+            >
+              Submit
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <section className="px-4 pb-7 pt-6 md:hidden">
+        <div className="mb-5 flex items-center justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-neutral-400 md:text-sm">
-              2026 World Cup
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#6a746c]">
+              {currentMobileRound.title}
             </p>
-
-            <h1 className="text-3xl font-bold md:text-4xl">
-              Knockout Challenge
-            </h1>
-
-            <p className="mt-2 text-sm text-neutral-400 md:text-base">
-              Pick each winner until one champion remains.
-            </p>
+            <h2 className="text-5xl font-black leading-none tracking-normal">
+              Bracket
+            </h2>
           </div>
 
           <a
             href="#leaderboard"
-            className="rounded-xl bg-gradient-to-r from-yellow-400 via-neutral-300 to-amber-700 px-5 py-3 text-center text-sm font-bold text-black transition hover:opacity-90"
+            className="rounded-full bg-white px-4 py-3 text-sm font-black text-[#071007] shadow-sm"
           >
-            🏆 View Leaderboard
+            Scores
           </a>
         </div>
-      </div>
 
-      <section className="mb-6 rounded-2xl border border-yellow-500/40 bg-gradient-to-br from-yellow-500/20 via-neutral-900 to-amber-700/20 p-5 text-center shadow-[0_0_24px_rgba(234,179,8,0.14)]">
-        <p className="text-xs font-bold uppercase tracking-[0.24em] text-yellow-400">
-          Submission Deadline
-        </p>
-
-        <p className="mt-2 text-lg font-semibold text-white">
-          June 27, 2026 • 11:59 PM CDT
-        </p>
-
-        <p className="mt-4 whitespace-nowrap text-4xl font-black tracking-tight text-yellow-300">
-          {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
-        </p>
-      </section>
-<section className="sticky top-0 z-40 mb-6 rounded-b-2xl border-b border-yellow-500/30 bg-neutral-950/95 px-1 pb-3 pt-3 backdrop-blur">
-<div className="sticky top-0 z-50 mb-6 bg-neutral-950/95 py-3 backdrop-blur">
-  <div className="mb-2 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
-    <span>Bracket Progress</span>
-    <span>{completedPicks}/31</span>
-  </div>
-
-  <div className="h-2 overflow-hidden rounded-full bg-neutral-800">
-    <div
-      className="h-full rounded-full bg-gradient-to-r from-yellow-400 via-neutral-300 to-amber-700 transition-all duration-300"
-      style={{ width: `${completionPercent}%` }}
-    />
-  </div>
-</div>
-</section>
-      <section className="mb-6 rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 via-neutral-900 to-amber-700/10 p-3">
-        <div className="flex flex-nowrap items-center justify-center gap-2 overflow-x-auto">
-          <button
-            type="button"
-            onClick={autoSelectBracket}
-            className="shrink-0 rounded-full bg-neutral-800 px-4 py-2 text-xs font-bold text-white transition hover:bg-neutral-700 sm:text-sm"
-          >
-            Auto Select
-          </button>
-
-          <button
-            type="button"
-            onClick={resetBracket}
-            className="shrink-0 rounded-full border border-yellow-500/30 bg-neutral-900 px-4 py-2 text-xs font-bold text-white transition hover:bg-neutral-800 sm:text-sm"
-          >
-            Reset Bracket
-          </button>
-
-          <a
-            href="#submit"
-            className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition sm:text-sm ${
-              champion
-                ? "bg-white text-black hover:bg-neutral-200"
-                : "bg-neutral-800 text-white hover:bg-neutral-700"
-            }`}
-          >
-            Submit Bracket
-          </a>
-        </div>
-      </section>
-
-      <section className="md:hidden">
-        <div className="mb-4 flex gap-2 overflow-x-auto pb-2">
-          {mobileRounds.map((round) => (
-            <button
-              key={round.key}
-              type="button"
-              onClick={() => setMobileRound(round.key)}
-              className={`shrink-0 rounded-full px-4 py-2 text-sm font-bold transition ${
-                mobileRound === round.key
-                  ? "bg-white text-black"
-                  : "bg-neutral-800 text-white"
-              }`}
-            >
-              {round.title}
-            </button>
-          ))}
-        </div>
+        <RoundStageRail
+          rounds={mobileRounds}
+          activeRound={mobileRound}
+          onSelect={setMobileRound}
+        />
 
         <MobileRound
           title={currentMobileRound.title}
@@ -492,14 +534,14 @@ const completionPercent = Math.round(
           onPick={pickWinner}
         />
 
-        <div className="mt-4 flex gap-3">
+        <div className="mt-5 grid grid-cols-2 gap-3">
           <button
             type="button"
             disabled={currentMobileRoundIndex === 0}
             onClick={() =>
               setMobileRound(mobileRounds[currentMobileRoundIndex - 1].key)
             }
-            className="flex-1 rounded-xl border border-neutral-700 px-4 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-2xl border border-[#071007]/15 bg-white px-4 py-4 text-sm font-black text-[#071007] shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
           >
             Back
           </button>
@@ -510,149 +552,174 @@ const completionPercent = Math.round(
             onClick={() =>
               setMobileRound(mobileRounds[currentMobileRoundIndex + 1].key)
             }
-            className="flex-1 rounded-xl bg-white px-4 py-3 font-bold text-black disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-2xl bg-[#071007] px-4 py-4 text-sm font-black text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
           >
             Next Round
           </button>
         </div>
       </section>
 
-      <section className="hidden md:block">
-        <div className="overflow-x-auto">
-          <div className="grid min-w-[1600px] grid-cols-5 items-center gap-16">
-            <Round
-              title="Round of 32"
-              matches={roundOf32}
-              winners={r32Winners}
-              roundKey="r32"
-              meta={roundMeta.r32}
-              onPick={pickWinner}
-            />
+      <section className="hidden px-6 py-8 md:block">
+        <div className="mx-auto max-w-[1800px]">
+          <div className="mb-6 flex items-end justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f5c84b]">
+                Bracket
+              </p>
+              <h2 className="mt-2 text-4xl font-black">Knockout Predictor</h2>
+            </div>
+            <p className="max-w-md text-right text-sm font-medium text-white/55">
+              Desktop keeps the full bracket in view with cleaner match lanes
+              and connector lines.
+            </p>
+          </div>
 
-            <Round
-              title="Round of 16"
-              matches={r16Matches}
-              winners={r16Winners}
-              roundKey="r16"
-              meta={roundMeta.r16}
-              onPick={pickWinner}
-            />
+          <div className="overflow-x-auto rounded-[2rem] border border-white/10 bg-[#101810] p-6 shadow-[0_22px_70px_rgba(0,0,0,0.28)]">
+            <div className="grid min-w-[1600px] grid-cols-5 items-center gap-16">
+              <Round
+                title="Round of 32"
+                matches={roundOf32}
+                winners={r32Winners}
+                roundKey="r32"
+                meta={roundMeta.r32}
+                onPick={pickWinner}
+              />
 
-            <Round
-              title="Quarterfinals"
-              matches={qfMatches}
-              winners={qfWinners}
-              roundKey="qf"
-              meta={roundMeta.qf}
-              onPick={pickWinner}
-            />
+              <Round
+                title="Round of 16"
+                matches={r16Matches}
+                winners={r16Winners}
+                roundKey="r16"
+                meta={roundMeta.r16}
+                onPick={pickWinner}
+              />
 
-            <Round
-              title="Semifinals"
-              matches={sfMatches}
-              winners={sfWinners}
-              roundKey="sf"
-              meta={roundMeta.sf}
-              onPick={pickWinner}
-            />
+              <Round
+                title="Quarterfinals"
+                matches={qfMatches}
+                winners={qfWinners}
+                roundKey="qf"
+                meta={roundMeta.qf}
+                onPick={pickWinner}
+              />
 
-            <Round
-              title="Final"
-              matches={[finalMatch]}
-              winners={[champion]}
-              roundKey="final"
-              meta={roundMeta.final}
-              onPick={pickWinner}
-            />
+              <Round
+                title="Semifinals"
+                matches={sfMatches}
+                winners={sfWinners}
+                roundKey="sf"
+                meta={roundMeta.sf}
+                onPick={pickWinner}
+              />
+
+              <Round
+                title="Final"
+                matches={[finalMatch]}
+                winners={[champion]}
+                roundKey="final"
+                meta={roundMeta.final}
+                onPick={pickWinner}
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <ChampionCard champion={champion} />
+      <div className="px-4 pb-8 md:px-6">
+        <div className="mx-auto grid max-w-[1800px] gap-5 lg:grid-cols-2">
+          <ChampionCard champion={champion} />
 
-        <SubmitCard
-          submitted={submitted}
-          name={name}
-          email={email}
-          champion={champion}
-          error={error}
-          isSubmitting={isSubmitting}
-          setSubmitted={setSubmitted}
-          setName={setName}
-          setEmail={setEmail}
-          handleSubmit={handleSubmit}
-        />
+          <SubmitCard
+            submitted={submitted}
+            name={name}
+            email={email}
+            champion={champion}
+            error={error}
+            isSubmitting={isSubmitting}
+            setSubmitted={setSubmitted}
+            setName={setName}
+            setEmail={setEmail}
+            handleSubmit={handleSubmit}
+          />
+        </div>
+
+        <section
+          id="leaderboard"
+          className="mx-auto mt-6 max-w-[1800px] rounded-[1.5rem] border border-black/10 bg-white p-5 text-[#071007] shadow-[0_16px_44px_rgba(0,0,0,0.12)] md:rounded-[2rem] md:border-white/10 md:bg-[#101810] md:p-6 md:text-white"
+        >
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#6a746c] md:text-[#f5c84b]">
+                Leaderboard
+              </p>
+
+              <h2 className="mt-2 text-3xl font-black">Current Top 3</h2>
+
+              <p className="mt-2 max-w-2xl text-sm font-medium text-[#5c675f] md:text-white/55">
+                Standings pull from Notion and update when Total Points are
+                updated.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={loadLeaderboard}
+              className="rounded-full border border-[#071007]/10 bg-[#071007] px-5 py-3 text-sm font-black text-white transition hover:bg-[#143517] md:border-white/15 md:bg-white md:text-[#071007] md:hover:bg-[#f5c84b]"
+            >
+              Refresh
+            </button>
+          </div>
+
+          <LeaderboardGrid
+            leaderboard={leaderboard.slice(0, 3)}
+            isLoadingLeaderboard={isLoadingLeaderboard}
+          />
+        </section>
       </div>
-
-      <section
-        id="leaderboard"
-        className="mt-8 rounded-2xl border border-neutral-800 bg-neutral-900 p-5"
-      >
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-neutral-400">
-              Leaderboard
-            </p>
-
-            <h2 className="mt-2 text-2xl font-bold">Current Top 3</h2>
-
-            <p className="mt-2 text-neutral-400">
-              Standings pull from Notion and update when Total Points are
-              updated.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={loadLeaderboard}
-            className="rounded-xl border border-neutral-700 px-5 py-3 text-sm font-bold text-white transition hover:bg-neutral-800"
-          >
-            Refresh Leaderboard
-          </button>
-        </div>
-
-        <LeaderboardGrid
-          leaderboard={leaderboard.slice(0, 3)}
-          isLoadingLeaderboard={isLoadingLeaderboard}
-        />
-      </section>
     </main>
   );
 }
 
 function ChampionCard({ champion }: { champion: string }) {
   return (
-    <div className="rounded-2xl border border-yellow-500/40 bg-gradient-to-br from-yellow-500/10 via-neutral-900 to-amber-700/10 p-6">
-      <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/20 text-2xl">
-          🏆
-        </div>
-
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-yellow-400">
-            Champion Pick
-          </p>
-
-          <p className="text-sm text-neutral-400">Your predicted winner</p>
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <p
-          className={`text-3xl font-bold md:text-4xl ${
-            champion ? "text-white" : "text-neutral-500"
-          }`}
-        >
-          {champion || "Select a Champion"}
+    <div className="overflow-hidden rounded-[1.5rem] border border-[#f5c84b]/45 bg-[#071007] text-white shadow-[0_18px_50px_rgba(0,0,0,0.18)] md:rounded-[2rem] md:bg-gradient-to-br md:from-[#122513] md:via-[#071007] md:to-[#2a230d]">
+      <div className="border-b border-white/10 bg-[#f5c84b] px-5 py-3 text-[#071007]">
+        <p className="text-[11px] font-black uppercase tracking-[0.22em]">
+          Champion Pick
         </p>
       </div>
 
-      {champion ? (
-        <div className="mt-4 inline-flex items-center rounded-full border border-yellow-500/30 bg-yellow-500/10 px-3 py-1 text-sm font-semibold text-yellow-300">
-          Predicted World Champion
+      <div className="p-5 md:p-6">
+        <div className="flex items-center gap-4">
+          <div className="grid h-16 w-16 shrink-0 place-items-center rounded-full border border-[#f5c84b]/35 bg-[#f5c84b]/15">
+            <div className="h-9 w-9 rounded-full bg-[conic-gradient(from_20deg,#f5c84b,#ffffff,#b8872d,#f5c84b)]" />
+          </div>
+
+          <div>
+            <p className="text-sm font-bold text-white/55">
+              Your predicted winner
+            </p>
+            <p
+              className={`mt-1 text-4xl font-black leading-none tracking-normal md:text-5xl ${
+                champion ? "text-white" : "text-white/35"
+              }`}
+            >
+              {champion || "Select Champion"}
+            </p>
+          </div>
         </div>
-      ) : null}
+
+        <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.06] p-4">
+          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#f5c84b]">
+            Final Status
+          </p>
+          <p className="mt-1 text-sm font-semibold text-white/70">
+            {champion
+              ? "Champion selected and ready for submission."
+              : "Choose the Final winner to unlock your champion."}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -683,42 +750,49 @@ function SubmitCard({
   return (
     <div
       id="submit"
-      className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5"
+      className="rounded-[1.5rem] border border-black/10 bg-white p-5 text-[#071007] shadow-[0_16px_44px_rgba(0,0,0,0.12)] md:rounded-[2rem] md:border-white/10 md:bg-[#101810] md:p-6 md:text-white"
     >
       {submitted ? (
         <div>
-          <p className="mb-2 text-sm uppercase tracking-[0.3em] text-neutral-400">
+          <p className="mb-2 text-[11px] font-black uppercase tracking-[0.22em] text-[#6a746c] md:text-[#f5c84b]">
             Submission Received
           </p>
 
-          <h2 className="text-2xl font-bold">Bracket Submitted</h2>
+          <h2 className="text-3xl font-black">Bracket Submitted</h2>
 
-          <div className="mt-5 rounded-xl bg-white p-5 text-black">
-            <p className="text-sm text-neutral-500">Name</p>
-            <p className="text-lg font-bold">{name}</p>
+          <div className="mt-5 rounded-2xl border border-[#071007]/10 bg-[#eef2ec] p-5 text-[#071007] md:border-white/10 md:bg-white">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#6a746c]">
+              Name
+            </p>
+            <p className="text-xl font-black">{name}</p>
 
-            <p className="mt-4 text-sm text-neutral-500">Champion Pick</p>
-            <p className="text-lg font-bold">{champion}</p>
+            <p className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-[#6a746c]">
+              Champion Pick
+            </p>
+            <p className="text-xl font-black">{champion}</p>
           </div>
 
-          <p className="mt-4 text-sm text-neutral-400">
+          <p className="mt-4 text-sm font-medium text-[#5c675f] md:text-white/55">
             Thank you for participating in the World Cup Knockout Challenge.
           </p>
 
           <button
             type="button"
             onClick={() => setSubmitted(false)}
-            className="mt-4 w-full rounded-xl border border-neutral-700 px-4 py-3 font-bold text-white transition hover:bg-neutral-800"
+            className="mt-4 w-full rounded-2xl border border-[#071007]/10 bg-[#071007] px-4 py-4 text-sm font-black text-white transition hover:bg-[#143517] md:border-white/15 md:bg-white/10"
           >
             Edit Bracket
           </button>
         </div>
       ) : (
         <>
-          <h2 className="mb-4 text-xl font-bold">Submit Your Bracket</h2>
+          <p className="mb-2 text-[11px] font-black uppercase tracking-[0.22em] text-[#6a746c] md:text-[#f5c84b]">
+            Entry
+          </p>
+          <h2 className="mb-5 text-3xl font-black">Submit Your Bracket</h2>
 
           <div className="mb-4">
-            <label className="mb-2 block text-sm text-neutral-400">
+            <label className="mb-2 block text-sm font-bold text-[#5c675f] md:text-white/60">
               Name / Nickname
             </label>
 
@@ -727,31 +801,37 @@ function SubmitCard({
               autoComplete="name"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-3 text-white"
+              className="w-full rounded-2xl border border-[#071007]/10 bg-[#eef2ec] px-4 py-4 text-base font-bold text-[#071007] outline-none transition placeholder:text-[#6a746c]/65 focus:border-[#f5c84b] focus:ring-4 focus:ring-[#f5c84b]/20 md:border-white/10 md:bg-[#071007] md:text-white"
               placeholder="Enter your name"
             />
           </div>
 
           <div className="mb-4">
-            <label className="mb-2 block text-sm text-neutral-400">Email</label>
+            <label className="mb-2 block text-sm font-bold text-[#5c675f] md:text-white/60">
+              Email
+            </label>
 
             <input
               type="email"
               autoComplete="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-3 text-white"
+              className="w-full rounded-2xl border border-[#071007]/10 bg-[#eef2ec] px-4 py-4 text-base font-bold text-[#071007] outline-none transition placeholder:text-[#6a746c]/65 focus:border-[#f5c84b] focus:ring-4 focus:ring-[#f5c84b]/20 md:border-white/10 md:bg-[#071007] md:text-white"
               placeholder="you@example.com"
             />
           </div>
 
-          {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
+          {error && (
+            <p className="mb-4 rounded-2xl bg-red-500/10 px-4 py-3 text-sm font-bold text-red-500 md:text-red-300">
+              {error}
+            </p>
+          )}
 
           <button
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="w-full rounded-xl bg-white px-4 py-3 font-bold text-black transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-2xl bg-[#f5c84b] px-4 py-4 text-sm font-black text-[#071007] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? "Submitting..." : "Submit Bracket"}
           </button>
@@ -762,16 +842,136 @@ function SubmitCard({
 }
 
 function MatchHeader({ meta, index }: { meta: MatchMeta[]; index: number }) {
+  const [date = "", time = ""] = (meta[index]?.date || "").split(" - ");
+
   return (
-    <div className="mb-3 flex items-center justify-between gap-3">
-      <p className="text-xs uppercase tracking-widest text-neutral-500">
+    <div className="mb-3 flex items-start justify-between gap-3 border-b border-[#071007]/15 pb-2 md:border-white/10">
+      <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#6a746c] md:text-white/45">
         Match {meta[index]?.matchNo || index + 1}
       </p>
 
-      <p className="text-xs font-semibold text-neutral-400">
-        {meta[index]?.date}
-      </p>
+      <div className="text-right">
+        <p className="text-sm font-black text-[#071007] md:text-white">
+          {date}
+        </p>
+        <p className="text-sm font-black text-[#071007] md:text-[#f5c84b]">
+          {time}
+        </p>
+      </div>
     </div>
+  );
+}
+
+function RoundStageRail({
+  rounds,
+  activeRound,
+  onSelect,
+}: {
+  rounds: {
+    key: RoundKey;
+    title: string;
+    matches: string[][];
+    winners: string[];
+    meta: MatchMeta[];
+  }[];
+  activeRound: RoundKey;
+  onSelect: (round: RoundKey) => void;
+}) {
+  return (
+    <div className="mb-6 overflow-x-auto pb-2">
+      <div className="flex min-w-[680px] items-end gap-2 rounded-[1.6rem] bg-[#c7cdc7] p-2">
+        {rounds.map((round) => {
+          const isActive = activeRound === round.key;
+          const picked = round.winners.filter(Boolean).length;
+
+          return (
+            <button
+              key={round.key}
+              type="button"
+              onClick={() => onSelect(round.key)}
+              className={`min-h-24 flex-1 rounded-[1.35rem] px-3 py-3 text-left transition ${
+                isActive
+                  ? "bg-[#18391c] text-white shadow-[0_14px_28px_rgba(6,34,7,0.26)]"
+                  : "text-[#6a746c]"
+              }`}
+            >
+              <span className="block text-sm font-black leading-tight">
+                {round.title}
+              </span>
+              <span className="mt-4 flex h-7 items-center gap-1.5">
+                {Array.from({ length: Math.min(round.matches.length, 5) }).map(
+                  (_, index) => (
+                    <span
+                      key={`${round.key}-bar-${index}`}
+                      className={`h-1.5 rounded-full ${
+                        isActive ? "bg-white" : "bg-white/80"
+                      }`}
+                      style={{
+                        width: `${Math.max(22, 46 - index * 5)}px`,
+                      }}
+                    />
+                  )
+                )}
+              </span>
+              <span
+                className={`mt-2 block text-[11px] font-black uppercase tracking-[0.14em] ${
+                  isActive ? "text-[#f5c84b]" : "text-[#6a746c]"
+                }`}
+              >
+                {picked}/{round.matches.length}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function TeamPickButton({
+  team,
+  selected,
+  onClick,
+  compact = false,
+}: {
+  team: string;
+  selected: boolean;
+  onClick: () => void;
+  compact?: boolean;
+}) {
+  const isDisabled = team.includes("TBD");
+
+  return (
+    <button
+      type="button"
+      disabled={isDisabled}
+      onClick={onClick}
+      className={`group flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left transition disabled:cursor-not-allowed disabled:opacity-55 ${
+        selected
+          ? "border-[#f5c84b] bg-[#f5c84b] text-[#071007] shadow-[0_10px_22px_rgba(245,200,75,0.28)]"
+          : "border-[#071007]/10 bg-white text-[#071007] hover:border-[#f5c84b] md:border-white/10 md:bg-white/[0.08] md:text-white md:hover:bg-white/[0.14]"
+      } ${compact ? "md:rounded-xl md:px-3 md:py-2.5" : ""}`}
+    >
+      <span
+        className={`grid shrink-0 place-items-center rounded-full font-black ${
+          compact ? "h-8 w-8 text-[10px]" : "h-14 w-14 text-sm"
+        } ${
+          selected
+            ? "bg-[#071007] text-white"
+            : "bg-[#8d8f93] text-white md:bg-white/15"
+        }`}
+      >
+        {team.includes("TBD") ? "TBD" : team.slice(0, 3)}
+      </span>
+
+      <span
+        className={`min-w-0 flex-1 font-black leading-tight ${
+          compact ? "text-sm" : "text-xl"
+        }`}
+      >
+        {team}
+      </span>
+    </button>
   );
 }
 
@@ -791,32 +991,34 @@ function MobileRound({
   onPick: (round: string, index: number, team: string) => void;
 }) {
   return (
-    <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
-      <h2 className="mb-4 text-xl font-bold">{title}</h2>
+    <div>
+      <div className="mb-4 flex items-center justify-between">
+        <p className="text-sm font-black uppercase tracking-[0.18em] text-[#6a746c]">
+          {title}
+        </p>
+        <p className="text-sm font-black text-[#6a746c]">
+          {winners.filter(Boolean).length}/{matches.length}
+        </p>
+      </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         {matches.map((match, index) => (
           <div
             key={`${roundKey}-${index}`}
-            className="rounded-xl border border-neutral-800 bg-neutral-950 p-3"
+            className="relative rounded-[1.65rem] bg-white p-4 text-[#071007] shadow-[0_16px_32px_rgba(7,16,7,0.12)]"
           >
             <MatchHeader meta={meta} index={index} />
 
-            {match.map((team, teamIndex) => (
-              <button
-                key={`${roundKey}-${index}-${teamIndex}`}
-                type="button"
-                disabled={team.includes("TBD")}
-                onClick={() => onPick(roundKey, index, team)}
-                className={`mb-2 block w-full rounded-xl px-4 py-3 text-left font-semibold transition ${
-                  winners[index] === team
-                    ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.35)]"
-                    : "bg-neutral-800 hover:bg-neutral-700"
-                } disabled:cursor-not-allowed disabled:opacity-40`}
-              >
-                {team}
-              </button>
-            ))}
+            <div className="grid gap-3">
+              {match.map((team, teamIndex) => (
+                <TeamPickButton
+                  key={`${roundKey}-${index}-${teamIndex}`}
+                  team={team}
+                  selected={winners[index] === team}
+                  onClick={() => onPick(roundKey, index, team)}
+                />
+              ))}
+            </div>
           </div>
         ))}
       </div>
@@ -841,49 +1043,45 @@ function Round({
 }) {
   return (
     <section>
-      <h2 className="mb-4 text-lg font-semibold text-neutral-300">{title}</h2>
+      <h2 className="mb-4 text-lg font-black text-white">{title}</h2>
 
       <div className="flex flex-col gap-10">
         {matches.map((match, index) => (
-         <div
-  key={`${roundKey}-${index}`}
-  className={`relative rounded-2xl border border-neutral-800 bg-neutral-900 p-5 transition ${
-    title === "Final"
-      ? "scale-110 border-white"
-      : title === "Semifinals"
-        ? "scale-105"
-        : ""
-  }`}
->
-  {title !== "Final" && (
-    <>
-      <div className="absolute -right-8 top-1/2 hidden h-[2px] w-8 -translate-y-1/2 bg-gradient-to-r from-neutral-500 to-neutral-700 lg:block" />
+          <div
+            key={`${roundKey}-${index}`}
+            className={`relative rounded-[1.35rem] border border-white/10 bg-[#071007] p-4 shadow-[0_14px_34px_rgba(0,0,0,0.2)] transition ${
+              title === "Final"
+                ? "scale-110 border-[#f5c84b]"
+                : title === "Semifinals"
+                  ? "scale-105"
+                  : ""
+            }`}
+          >
+            {title !== "Final" && (
+              <>
+                <div className="absolute -right-8 top-1/2 hidden h-[2px] w-8 -translate-y-1/2 bg-[#f5c84b]/35 lg:block" />
 
-      {index % 2 === 0 ? (
-        <div className="absolute -right-8 top-1/2 hidden h-[calc(100%+40px)] w-[2px] bg-gradient-to-b from-neutral-500 to-neutral-700 lg:block" />
-      ) : (
-        <div className="absolute -right-8 bottom-1/2 hidden h-[calc(100%+40px)] w-[2px] bg-gradient-to-b from-neutral-500 to-neutral-700 lg:block" />
-      )}
-    </>
-  )}
+                {index % 2 === 0 ? (
+                  <div className="absolute -right-8 top-1/2 hidden h-[calc(100%+40px)] w-[2px] bg-[#f5c84b]/20 lg:block" />
+                ) : (
+                  <div className="absolute -right-8 bottom-1/2 hidden h-[calc(100%+40px)] w-[2px] bg-[#f5c84b]/20 lg:block" />
+                )}
+              </>
+            )}
 
-  <MatchHeader meta={meta} index={index} />
+            <MatchHeader meta={meta} index={index} />
 
-            {match.map((team, teamIndex) => (
-              <button
-                key={`${roundKey}-${index}-${teamIndex}`}
-                type="button"
-                disabled={team.includes("TBD")}
-                onClick={() => onPick(roundKey, index, team)}
-                className={`mb-2 block w-full rounded-xl px-4 py-3 text-left font-semibold transition ${
-                  winners[index] === team
-                    ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.35)]"
-                    : "bg-neutral-800 hover:scale-[1.02] hover:bg-neutral-700"
-                } disabled:cursor-not-allowed disabled:opacity-40`}
-              >
-                {team}
-              </button>
-            ))}
+            <div className="grid gap-2">
+              {match.map((team, teamIndex) => (
+                <TeamPickButton
+                  key={`${roundKey}-${index}-${teamIndex}`}
+                  team={team}
+                  selected={winners[index] === team}
+                  onClick={() => onPick(roundKey, index, team)}
+                  compact
+                />
+              ))}
+            </div>
           </div>
         ))}
       </div>
@@ -899,11 +1097,19 @@ function LeaderboardGrid({
   isLoadingLeaderboard: boolean;
 }) {
   if (isLoadingLeaderboard) {
-    return <p className="mt-5 text-neutral-400">Loading leaderboard...</p>;
+    return (
+      <p className="mt-5 text-sm font-bold text-[#5c675f] md:text-white/55">
+        Loading leaderboard...
+      </p>
+    );
   }
 
   if (leaderboard.length === 0) {
-    return <p className="mt-5 text-neutral-400">No leaderboard entries yet.</p>;
+    return (
+      <p className="mt-5 text-sm font-bold text-[#5c675f] md:text-white/55">
+        No leaderboard entries yet.
+      </p>
+    );
   }
 
   return (
@@ -911,27 +1117,25 @@ function LeaderboardGrid({
       {leaderboard.map((entry, index) => (
         <div
           key={entry.id}
-          className={`rounded-xl border p-4 transition-all ${
-  index === 0
-    ? "border-yellow-400 bg-gradient-to-br from-yellow-500/20 via-neutral-900 to-yellow-700/10"
-    : index === 1
-      ? "border-neutral-300 bg-gradient-to-br from-neutral-300/20 via-neutral-900 to-neutral-500/10"
-      : "border-amber-700 bg-gradient-to-br from-amber-700/20 via-neutral-900 to-orange-900/10"
-}`}
+          className={`rounded-[1.35rem] border p-4 transition-all ${
+            index === 0
+              ? "border-[#f5c84b] bg-[#f5c84b] text-[#071007]"
+              : index === 1
+                ? "border-[#cfd4d0] bg-[#eef2ec] text-[#071007] md:bg-white/10 md:text-white"
+                : "border-[#b8872d] bg-[#f1dcc0] text-[#071007] md:bg-[#b8872d]/20 md:text-white"
+          }`}
         >
-          <p className="text-2xl">
-            {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
+          <p className="text-xs font-black uppercase tracking-[0.18em] opacity-70">
+            Rank {index + 1}
           </p>
 
-          <p className="mt-2 font-bold">
-            {index + 1}. {entry.name}
-          </p>
+          <p className="mt-3 text-2xl font-black">{entry.name}</p>
 
-          <p className="text-sm text-neutral-400">
+          <p className="mt-1 text-sm font-bold opacity-70">
             Champion: {entry.champion}
           </p>
 
-          <p className="mt-3 text-xl font-bold">{entry.points} pts</p>
+          <p className="mt-5 text-3xl font-black">{entry.points} pts</p>
         </div>
       ))}
     </div>
@@ -948,73 +1152,90 @@ function FullLeaderboardView({
   loadLeaderboard: () => void;
 }) {
   return (
-    <main className="min-h-screen bg-neutral-950 p-6 text-white">
-      <div className="mb-8">
-        <p className="text-sm uppercase tracking-[0.3em] text-neutral-400">
-          2026 World Cup
-        </p>
+    <main className="min-h-screen bg-[#dfe5df] text-[#071007] md:bg-[#071007] md:text-white">
+      <div className="bg-[#062207] px-5 pb-8 pt-6 text-white md:px-8">
+        <div className="mx-auto max-w-5xl">
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f5c84b]">
+            2026 World Cup
+          </p>
 
-        <h1 className="text-4xl font-bold">Final Leaderboard</h1>
+          <h1 className="mt-3 text-5xl font-black leading-none tracking-normal md:text-7xl">
+            Leaderboard
+          </h1>
 
-        <p className="mt-2 text-neutral-400">
-          Submissions are closed. Standings are updated as tournament results
-          come in.
-        </p>
+          <p className="mt-3 max-w-2xl text-sm font-medium text-white/70 md:text-base">
+            Submissions are closed. Standings are updated as tournament results
+            come in.
+          </p>
 
-        <button
-          type="button"
-          onClick={loadLeaderboard}
-          className="mt-5 rounded-xl border border-neutral-700 px-5 py-3 text-sm font-bold text-white transition hover:bg-neutral-800"
-        >
-          Refresh Leaderboard
-        </button>
+          <button
+            type="button"
+            onClick={loadLeaderboard}
+            className="mt-5 rounded-full bg-white px-5 py-3 text-sm font-black text-[#071007] transition hover:bg-[#f5c84b]"
+          >
+            Refresh Leaderboard
+          </button>
+        </div>
       </div>
 
-      {isLoadingLeaderboard ? (
-        <p className="text-neutral-400">Loading leaderboard...</p>
-      ) : leaderboard.length === 0 ? (
-        <p className="text-neutral-400">No leaderboard entries yet.</p>
-      ) : (
-        <div className="space-y-3">
-          {leaderboard.map((entry, index) => (
-            <div
-              key={entry.id}
-              className={`rounded-2xl border p-5 ${
-                index === 0
-                  ? "border-yellow-400 bg-neutral-900"
-                  : index === 1
-                    ? "border-neutral-300 bg-neutral-900"
-                    : index === 2
-                      ? "border-amber-700 bg-neutral-900"
-                      : "border-neutral-800 bg-neutral-900"
-              }`}
-            >
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-sm text-neutral-400">Rank #{index + 1}</p>
+      <div className="mx-auto max-w-5xl px-4 py-6 md:px-8">
+        <div className="mb-5 rounded-[1.5rem] border border-black/10 bg-white p-5 shadow-[0_16px_44px_rgba(0,0,0,0.12)] md:border-white/10 md:bg-[#101810]">
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#6a746c] md:text-[#f5c84b]">
+            Coming Next
+          </p>
+          <h2 className="mt-2 text-2xl font-black">Find My Bracket</h2>
+          <p className="mt-2 text-sm font-medium text-[#5c675f] md:text-white/55">
+            This area is reserved for the post-deadline email lookup flow.
+          </p>
+        </div>
 
-                  <h2 className="text-2xl font-bold">
-                    {index === 0
-                      ? "🥇 "
-                      : index === 1
-                        ? "🥈 "
-                        : index === 2
-                          ? "🥉 "
-                          : ""}
-                    {entry.name}
-                  </h2>
+        {isLoadingLeaderboard ? (
+          <p className="text-sm font-bold text-[#5c675f] md:text-white/55">
+            Loading leaderboard...
+          </p>
+        ) : leaderboard.length === 0 ? (
+          <p className="text-sm font-bold text-[#5c675f] md:text-white/55">
+            No leaderboard entries yet.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {leaderboard.map((entry, index) => (
+              <div
+                key={entry.id}
+                className={`rounded-[1.35rem] border p-5 shadow-[0_12px_34px_rgba(0,0,0,0.1)] ${
+                  index === 0
+                    ? "border-[#f5c84b] bg-[#f5c84b] text-[#071007]"
+                    : index === 1
+                      ? "border-[#cfd4d0] bg-white text-[#071007] md:bg-[#101810] md:text-white"
+                      : index === 2
+                        ? "border-[#b8872d] bg-[#f1dcc0] text-[#071007] md:bg-[#101810] md:text-white"
+                        : "border-black/10 bg-white text-[#071007] md:border-white/10 md:bg-[#101810] md:text-white"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="text-xs font-black uppercase tracking-[0.18em] opacity-65">
+                      Rank {index + 1}
+                    </p>
 
-                  <p className="mt-1 text-sm text-neutral-400">
-                    Champion Pick: {entry.champion}
+                    <h2 className="mt-1 truncate text-2xl font-black">
+                      {entry.name}
+                    </h2>
+
+                    <p className="mt-1 text-sm font-bold opacity-70">
+                      Champion Pick: {entry.champion}
+                    </p>
+                  </div>
+
+                  <p className="shrink-0 text-3xl font-black">
+                    {entry.points} pts
                   </p>
                 </div>
-
-                <p className="text-3xl font-bold">{entry.points} pts</p>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </main>
   );
 }
