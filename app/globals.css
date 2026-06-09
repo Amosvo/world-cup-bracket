@@ -5,6 +5,61 @@
   --foreground: #f8faf7;
 }
 
+@layer base {
+  :root {
+  --app-page: #dfe5df;
+  --app-text: #071007;
+  --app-green: #00592e;
+  --app-accent: #ffab00;
+  --app-surface: #ffffff;
+  --app-surface-strong: #eef2ec;
+  --app-surface-deep: #071007;
+  --app-panel: #ffffff;
+  --app-panel-text: #071007;
+  --app-muted: #5c675f;
+  --app-muted-strong: #6a746c;
+  --app-border: rgba(7, 16, 7, 0.1);
+  --app-border-strong: rgba(7, 16, 7, 0.15);
+  --app-gold-border: rgba(255, 171, 0, 0.32);
+  --app-sticky: rgba(238, 242, 236, 0.94);
+  --app-rail: #c7cdc7;
+  --app-rail-muted: #6a746c;
+  --app-button: #ffffff;
+  --app-button-text: #071007;
+  --app-input: #eef2ec;
+  --app-team: #ffffff;
+  --app-team-text: #071007;
+  --app-seed: #8d8f93;
+  --app-shadow: rgba(0, 0, 0, 0.12);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+    --background: #071007;
+    --foreground: #ffffff;
+    --app-page: #071007;
+    --app-text: #ffffff;
+    --app-surface: #101810;
+    --app-surface-strong: #071007;
+    --app-panel: #101810;
+    --app-panel-text: #ffffff;
+    --app-muted: rgba(255, 255, 255, 0.6);
+    --app-muted-strong: rgba(255, 255, 255, 0.55);
+    --app-border: rgba(255, 255, 255, 0.1);
+    --app-border-strong: rgba(255, 255, 255, 0.15);
+    --app-gold-border: rgba(255, 171, 0, 0.25);
+    --app-sticky: rgba(7, 16, 7, 0.92);
+    --app-rail: #101810;
+    --app-rail-muted: rgba(255, 255, 255, 0.55);
+    --app-input: #071007;
+    --app-team: rgba(255, 255, 255, 0.08);
+    --app-team-text: #ffffff;
+    --app-seed: rgba(255, 255, 255, 0.15);
+    --app-shadow: rgba(0, 0, 0, 0.28);
+    }
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -28,6 +83,43 @@ html {
 }
 
 ::selection {
-  background: #f5c84b;
+  background: #ffab00;
   color: #081208;
+}
+
+.round-rail-scroll {
+  scrollbar-color: transparent transparent;
+  scrollbar-width: none;
+}
+
+.round-rail-scroll:hover,
+.round-rail-scroll:focus-within,
+.round-rail-scroll:active {
+  scrollbar-color: rgba(7, 16, 7, 0.22) transparent;
+  scrollbar-width: thin;
+}
+
+.round-rail-scroll::-webkit-scrollbar {
+  height: 0;
+}
+
+.round-rail-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.round-rail-scroll::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 999px;
+}
+
+.round-rail-scroll:hover::-webkit-scrollbar-thumb,
+.round-rail-scroll:focus-within::-webkit-scrollbar-thumb,
+.round-rail-scroll:active::-webkit-scrollbar-thumb {
+  background: rgba(7, 16, 7, 0.22);
+}
+
+.round-rail-scroll:hover::-webkit-scrollbar,
+.round-rail-scroll:focus-within::-webkit-scrollbar,
+.round-rail-scroll:active::-webkit-scrollbar {
+  height: 3px;
 }

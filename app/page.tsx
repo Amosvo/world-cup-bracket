@@ -396,19 +396,19 @@ export default function Home() {
   const currentMobileRound = mobileRounds[currentMobileRoundIndex];
 
   return (
-    <main className="min-h-screen bg-[#dfe5df] text-[#071007] md:bg-[#071007] md:text-white">
-      <header className="bg-[#062207] px-5 pb-7 pt-5 text-white md:px-8 md:pb-8">
+    <main className="min-h-screen bg-[var(--app-page)] text-[var(--app-text)]">
+      <header className="bg-[var(--app-green)] px-5 pb-7 pt-7 text-white md:px-8 md:pb-8 md:pt-5">
         <div className="mx-auto max-w-[1800px]">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="grid h-16 w-16 shrink-0 place-items-center rounded-[1.4rem] bg-white/10 shadow-inner ring-1 ring-white/15 md:h-20 md:w-20">
                 <div className="grid h-11 w-11 place-items-center rounded-full bg-[conic-gradient(from_20deg,#f2673a_0_17%,#eef0e8_17%_35%,#a5aaa2_35%_52%,#1b9fcb_52%_70%,#13b37f_70%_86%,#eef0e8_86%_100%)] shadow-[0_10px_24px_rgba(0,0,0,0.35)] md:h-14 md:w-14">
-                  <div className="h-5 w-5 rounded-full bg-[#062207] md:h-6 md:w-6" />
+                  <div className="h-5 w-5 rounded-full bg-[var(--app-green)] md:h-6 md:w-6" />
                 </div>
               </div>
 
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#f5c84b]">
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--app-accent)]">
                   2026
                 </p>
                 <h1 className="text-[2.65rem] font-black leading-none tracking-normal md:text-7xl">
@@ -419,7 +419,7 @@ export default function Home() {
 
             <a
               href="#leaderboard"
-              className="hidden rounded-full bg-white px-5 py-3 text-sm font-black text-[#071007] shadow-[0_10px_24px_rgba(0,0,0,0.24)] transition hover:bg-[#f5c84b] sm:inline-flex"
+              className="hidden rounded-full bg-[var(--app-button)] px-5 py-3 text-sm font-black text-[var(--app-button-text)] shadow-[0_10px_24px_rgba(0,0,0,0.24)] transition hover:bg-[var(--app-accent)] sm:inline-flex"
             >
               Leaderboard
             </a>
@@ -427,16 +427,13 @@ export default function Home() {
 
           <div className="mt-6 grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-white/55">
-                Knockout Challenge
-              </p>
-              <p className="mt-1 max-w-2xl text-sm font-medium text-white/75 md:text-base">
-                Pick every knockout winner before the bracket locks.
+              <p className="max-w-2xl text-base font-bold text-white/85 md:text-lg">
+                Your bracket. Your points. Your prize.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-[#f5c84b]/35 bg-black/[0.18] p-4 shadow-[0_18px_44px_rgba(0,0,0,0.18)]">
-              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#f5c84b]">
+            <div className="rounded-2xl border border-[var(--app-accent)]/70 bg-[var(--app-surface-deep)]/85 p-4 shadow-[0_18px_44px_rgba(0,0,0,0.28)]">
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--app-accent)]">
                 Deadline
               </p>
               <p className="mt-1 text-sm font-bold text-white">
@@ -453,17 +450,51 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="sticky top-0 z-40 border-b border-black/10 bg-[#eef2ec]/[0.92] px-4 py-3 shadow-[0_12px_28px_rgba(0,0,0,0.12)] backdrop-blur md:border-[#f5c84b]/20 md:bg-[#071007]/[0.92] md:px-8">
-        <div className="mx-auto flex max-w-[1800px] flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="sticky top-0 z-40 border-b border-[var(--app-border)] bg-[var(--app-sticky)] px-3 pb-2 pt-3 shadow-[0_12px_28px_var(--app-shadow)] backdrop-blur md:hidden">
+        <div className="mb-3 flex justify-center gap-2 overflow-x-auto">
+          <button
+            type="button"
+            onClick={autoSelectBracket}
+            className="shrink-0 rounded-full border border-[var(--app-border-strong)] bg-[var(--app-button)] px-4 py-2 text-xs font-black text-[var(--app-button-text)] shadow-sm transition active:bg-[var(--app-accent)]"
+          >
+            Auto Select
+          </button>
+
+          <button
+            type="button"
+            onClick={resetBracket}
+            className="shrink-0 rounded-full border border-[var(--app-border)] bg-[var(--app-button)] px-4 py-2 text-xs font-black text-[var(--app-button-text)] shadow-sm transition active:bg-[var(--app-accent)]"
+          >
+            Reset
+          </button>
+
+          <a
+            href="#submit"
+            className="shrink-0 rounded-full border border-[var(--app-border-strong)] bg-[var(--app-button)] px-4 py-2 text-xs font-black text-[var(--app-button-text)] shadow-sm transition active:bg-[var(--app-accent)]"
+          >
+            Submit
+          </a>
+        </div>
+
+        <RoundStageRail
+          rounds={mobileRounds}
+          activeRound={mobileRound}
+          onSelect={setMobileRound}
+          compact
+        />
+      </div>
+
+      <div className="sticky top-0 z-40 hidden border-b border-[var(--app-gold-border)] bg-[var(--app-sticky)] px-8 py-3 shadow-[0_12px_28px_var(--app-shadow)] backdrop-blur md:block">
+        <div className="mx-auto flex max-w-[1800px] items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <div className="mb-2 flex items-center justify-between text-[11px] font-black uppercase tracking-[0.16em] text-[#314134] md:text-white/55">
+            <div className="mb-2 flex items-center justify-between text-[11px] font-black uppercase tracking-[0.16em] text-[var(--app-muted-strong)]">
               <span>Bracket Progress</span>
               <span>{completedPicks}/31</span>
             </div>
 
-            <div className="h-2 overflow-hidden rounded-full bg-black/10 md:bg-white/10">
+            <div className="h-2 overflow-hidden rounded-full bg-[var(--app-border)]">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-[#f5c84b] via-white to-[#b8872d] transition-all duration-300"
+                className="h-full rounded-full bg-gradient-to-r from-[var(--app-accent)] via-white to-[var(--app-accent)] transition-all duration-300"
                 style={{ width: `${completionPercent}%` }}
               />
             </div>
@@ -473,7 +504,7 @@ export default function Home() {
             <button
               type="button"
               onClick={autoSelectBracket}
-              className="shrink-0 rounded-full bg-[#09290b] px-4 py-2 text-xs font-black text-white shadow-sm transition hover:bg-[#0f3a12] md:bg-white/10"
+              className="shrink-0 rounded-full border border-[var(--app-border-strong)] bg-[var(--app-button)] px-4 py-2 text-xs font-black text-[var(--app-button-text)] shadow-sm transition active:bg-[var(--app-accent)]"
             >
               Auto Select
             </button>
@@ -481,18 +512,14 @@ export default function Home() {
             <button
               type="button"
               onClick={resetBracket}
-              className="shrink-0 rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-black text-[#071007] shadow-sm transition hover:bg-[#f5c84b] md:border-white/15"
+              className="shrink-0 rounded-full border border-[var(--app-border-strong)] bg-[var(--app-button)] px-4 py-2 text-xs font-black text-[var(--app-button-text)] shadow-sm transition active:bg-[var(--app-accent)]"
             >
               Reset
             </button>
 
             <a
               href="#submit"
-              className={`shrink-0 rounded-full px-4 py-2 text-xs font-black shadow-sm transition ${
-                champion
-                  ? "bg-[#f5c84b] text-[#071007] hover:bg-white"
-                  : "bg-[#071007] text-white hover:bg-[#18351b] md:bg-white md:text-[#071007]"
-              }`}
+              className="shrink-0 rounded-full border border-[var(--app-border-strong)] bg-[var(--app-button)] px-4 py-2 text-xs font-black text-[var(--app-button-text)] shadow-sm transition active:bg-[var(--app-accent)]"
             >
               Submit
             </a>
@@ -503,27 +530,18 @@ export default function Home() {
       <section className="px-4 pb-7 pt-6 md:hidden">
         <div className="mb-5 flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#6a746c]">
-              {currentMobileRound.title}
-            </p>
-            <h2 className="text-5xl font-black leading-none tracking-normal">
+            <h2 className="text-4xl font-black leading-none tracking-normal">
               Bracket
             </h2>
           </div>
 
           <a
             href="#leaderboard"
-            className="rounded-full bg-white px-4 py-3 text-sm font-black text-[#071007] shadow-sm"
+            className="rounded-full bg-[var(--app-accent)] px-4 py-2.5 text-sm font-black text-[var(--app-button-text)] shadow-sm"
           >
-            Scores
+            Leaderboard
           </a>
         </div>
-
-        <RoundStageRail
-          rounds={mobileRounds}
-          activeRound={mobileRound}
-          onSelect={setMobileRound}
-        />
 
         <MobileRound
           title={currentMobileRound.title}
@@ -541,7 +559,7 @@ export default function Home() {
             onClick={() =>
               setMobileRound(mobileRounds[currentMobileRoundIndex - 1].key)
             }
-            className="rounded-2xl border border-[#071007]/15 bg-white px-4 py-4 text-sm font-black text-[#071007] shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-2xl border border-[var(--app-border-strong)] bg-[var(--app-button)] px-4 py-4 text-sm font-black text-[var(--app-button-text)] shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
           >
             Back
           </button>
@@ -552,7 +570,7 @@ export default function Home() {
             onClick={() =>
               setMobileRound(mobileRounds[currentMobileRoundIndex + 1].key)
             }
-            className="rounded-2xl bg-[#071007] px-4 py-4 text-sm font-black text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-2xl bg-[var(--app-surface-deep)] px-4 py-4 text-sm font-black text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
           >
             Next Round
           </button>
@@ -563,18 +581,18 @@ export default function Home() {
         <div className="mx-auto max-w-[1800px]">
           <div className="mb-6 flex items-end justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f5c84b]">
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-[var(--app-accent)]">
                 Bracket
               </p>
               <h2 className="mt-2 text-4xl font-black">Knockout Predictor</h2>
             </div>
-            <p className="max-w-md text-right text-sm font-medium text-white/55">
+            <p className="max-w-md text-right text-sm font-medium text-[var(--app-muted-strong)]">
               Desktop keeps the full bracket in view with cleaner match lanes
               and connector lines.
             </p>
           </div>
 
-          <div className="overflow-x-auto rounded-[2rem] border border-white/10 bg-[#101810] p-6 shadow-[0_22px_70px_rgba(0,0,0,0.28)]">
+          <div className="overflow-x-auto rounded-[2rem] border border-[var(--app-border)] bg-[var(--app-surface)] p-6 shadow-[0_22px_70px_var(--app-shadow)]">
             <div className="grid min-w-[1600px] grid-cols-5 items-center gap-16">
               <Round
                 title="Round of 32"
@@ -645,29 +663,31 @@ export default function Home() {
 
         <section
           id="leaderboard"
-          className="mx-auto mt-6 max-w-[1800px] rounded-[1.5rem] border border-black/10 bg-white p-5 text-[#071007] shadow-[0_16px_44px_rgba(0,0,0,0.12)] md:rounded-[2rem] md:border-white/10 md:bg-[#101810] md:p-6 md:text-white"
+          className="mx-auto mt-6 max-w-[1800px] rounded-[1.5rem] border border-[var(--app-border)] bg-[var(--app-surface)] p-4 text-[var(--app-panel-text)] shadow-[0_18px_50px_var(--app-shadow)] md:rounded-[2rem] md:p-6"
         >
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#6a746c] md:text-[#f5c84b]">
-                Leaderboard
-              </p>
+          <div className="rounded-[1.25rem] border border-[var(--app-gold-border)] bg-[var(--app-surface-strong)] p-4 shadow-[0_18px_44px_var(--app-shadow)] md:rounded-[1.5rem] md:p-5">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[var(--app-accent)]">
+                  Leaderboard
+                </p>
 
-              <h2 className="mt-2 text-3xl font-black">Current Top 3</h2>
+                <h2 className="mt-2 text-3xl font-black">Current Top 3</h2>
 
-              <p className="mt-2 max-w-2xl text-sm font-medium text-[#5c675f] md:text-white/55">
-                Standings pull from Notion and update when Total Points are
-                updated.
-              </p>
+                <p className="mt-2 max-w-2xl text-sm font-medium text-[var(--app-muted)]">
+                  Standings pull from Notion and update when Total Points are
+                  updated.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={loadLeaderboard}
+                className="rounded-full border border-[var(--app-border-strong)] bg-[var(--app-button)] px-5 py-3 text-sm font-black text-[var(--app-button-text)] shadow-[0_10px_24px_var(--app-shadow)] transition hover:bg-[var(--app-accent)] active:bg-[var(--app-accent)]"
+              >
+                Refresh
+              </button>
             </div>
-
-            <button
-              type="button"
-              onClick={loadLeaderboard}
-              className="rounded-full border border-[#071007]/10 bg-[#071007] px-5 py-3 text-sm font-black text-white transition hover:bg-[#143517] md:border-white/15 md:bg-white md:text-[#071007] md:hover:bg-[#f5c84b]"
-            >
-              Refresh
-            </button>
           </div>
 
           <LeaderboardGrid
@@ -682,26 +702,26 @@ export default function Home() {
 
 function ChampionCard({ champion }: { champion: string }) {
   return (
-    <div className="overflow-hidden rounded-[1.5rem] border border-[#f5c84b]/45 bg-[#071007] text-white shadow-[0_18px_50px_rgba(0,0,0,0.18)] md:rounded-[2rem] md:bg-gradient-to-br md:from-[#122513] md:via-[#071007] md:to-[#2a230d]">
-      <div className="border-b border-white/10 bg-[#f5c84b] px-5 py-3 text-[#071007]">
-        <p className="text-[11px] font-black uppercase tracking-[0.22em]">
+    <div className="overflow-hidden rounded-[1.5rem] border border-[var(--app-border)] bg-[var(--app-surface)] text-[var(--app-panel-text)] shadow-[0_18px_50px_var(--app-shadow)] md:rounded-[2rem]">
+      <div className="border-b border-[var(--app-gold-border)] bg-[var(--app-surface-strong)] px-5 py-3">
+        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[var(--app-accent)]">
           Champion Pick
         </p>
       </div>
 
       <div className="p-5 md:p-6">
         <div className="flex items-center gap-4">
-          <div className="grid h-16 w-16 shrink-0 place-items-center rounded-full border border-[#f5c84b]/35 bg-[#f5c84b]/15">
-            <div className="h-9 w-9 rounded-full bg-[conic-gradient(from_20deg,#f5c84b,#ffffff,#b8872d,#f5c84b)]" />
+          <div className="grid h-16 w-16 shrink-0 place-items-center rounded-full border border-[var(--app-gold-border)] bg-[var(--app-border)]">
+            <div className="h-9 w-9 rounded-full bg-[conic-gradient(from_20deg,#ffab00,#ffffff,#ffab00,#ffab00)]" />
           </div>
 
           <div>
-            <p className="text-sm font-bold text-white/55">
+            <p className="text-sm font-bold text-[var(--app-muted-strong)]">
               Your predicted winner
             </p>
             <p
               className={`mt-1 text-4xl font-black leading-none tracking-normal md:text-5xl ${
-                champion ? "text-white" : "text-white/35"
+                champion ? "text-[var(--app-panel-text)]" : "text-[var(--app-muted-strong)]"
               }`}
             >
               {champion || "Select Champion"}
@@ -709,11 +729,11 @@ function ChampionCard({ champion }: { champion: string }) {
           </div>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.06] p-4">
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#f5c84b]">
+        <div className="mt-6 rounded-2xl border border-[var(--app-gold-border)] bg-[var(--app-surface-strong)] p-4">
+          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--app-accent)]">
             Final Status
           </p>
-          <p className="mt-1 text-sm font-semibold text-white/70">
+          <p className="mt-1 text-sm font-semibold text-[var(--app-muted)]">
             {champion
               ? "Champion selected and ready for submission."
               : "Choose the Final winner to unlock your champion."}
@@ -750,49 +770,51 @@ function SubmitCard({
   return (
     <div
       id="submit"
-      className="rounded-[1.5rem] border border-black/10 bg-white p-5 text-[#071007] shadow-[0_16px_44px_rgba(0,0,0,0.12)] md:rounded-[2rem] md:border-white/10 md:bg-[#101810] md:p-6 md:text-white"
+      className="rounded-[1.5rem] border border-[var(--app-border)] bg-[var(--app-panel)] p-5 text-[var(--app-panel-text)] shadow-[0_16px_44px_var(--app-shadow)] md:rounded-[2rem] md:p-6"
     >
       {submitted ? (
         <div>
-          <p className="mb-2 text-[11px] font-black uppercase tracking-[0.22em] text-[#6a746c] md:text-[#f5c84b]">
+          <p className="mb-2 text-[11px] font-black uppercase tracking-[0.22em] text-[var(--app-accent)]">
             Submission Received
           </p>
 
           <h2 className="text-3xl font-black">Bracket Submitted</h2>
 
-          <div className="mt-5 rounded-2xl border border-[#071007]/10 bg-[#eef2ec] p-5 text-[#071007] md:border-white/10 md:bg-white">
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#6a746c]">
+          <div className="mt-5 rounded-2xl border border-[var(--app-border)] bg-[var(--app-input)] p-5 text-[var(--app-text)]">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--app-muted-strong)]">
               Name
             </p>
             <p className="text-xl font-black">{name}</p>
 
-            <p className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-[#6a746c]">
+            <p className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-[var(--app-muted-strong)]">
               Champion Pick
             </p>
             <p className="text-xl font-black">{champion}</p>
           </div>
 
-          <p className="mt-4 text-sm font-medium text-[#5c675f] md:text-white/55">
+          <p className="mt-4 text-sm font-medium text-[var(--app-muted)]">
             Thank you for participating in the World Cup Knockout Challenge.
           </p>
 
           <button
             type="button"
             onClick={() => setSubmitted(false)}
-            className="mt-4 w-full rounded-2xl border border-[#071007]/10 bg-[#071007] px-4 py-4 text-sm font-black text-white transition hover:bg-[#143517] md:border-white/15 md:bg-white/10"
+            className="mt-4 w-full rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-deep)] px-4 py-4 text-sm font-black text-white transition hover:bg-[var(--app-green)]"
           >
             Edit Bracket
           </button>
         </div>
       ) : (
         <>
-          <p className="mb-2 text-[11px] font-black uppercase tracking-[0.22em] text-[#6a746c] md:text-[#f5c84b]">
+          <p className="mb-2 text-[11px] font-black uppercase tracking-[0.22em] text-[var(--app-accent)]">
             Entry
           </p>
-          <h2 className="mb-5 text-3xl font-black">Submit Your Bracket</h2>
+          <h2 className="mb-5 whitespace-nowrap text-2xl font-black sm:text-3xl">
+            Submit Your Bracket
+          </h2>
 
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-bold text-[#5c675f] md:text-white/60">
+            <label className="mb-2 block text-sm font-bold text-[var(--app-muted)]">
               Name / Nickname
             </label>
 
@@ -801,13 +823,13 @@ function SubmitCard({
               autoComplete="name"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className="w-full rounded-2xl border border-[#071007]/10 bg-[#eef2ec] px-4 py-4 text-base font-bold text-[#071007] outline-none transition placeholder:text-[#6a746c]/65 focus:border-[#f5c84b] focus:ring-4 focus:ring-[#f5c84b]/20 md:border-white/10 md:bg-[#071007] md:text-white"
+              className="w-full rounded-2xl border border-[var(--app-border)] bg-[var(--app-input)] px-4 py-4 text-base font-bold text-[var(--app-panel-text)] outline-none transition placeholder:text-[var(--app-muted-strong)] focus:border-[var(--app-accent)] focus:ring-4 focus:ring-[var(--app-accent)]/20"
               placeholder="Enter your name"
             />
           </div>
 
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-bold text-[#5c675f] md:text-white/60">
+            <label className="mb-2 block text-sm font-bold text-[var(--app-muted)]">
               Email
             </label>
 
@@ -816,7 +838,7 @@ function SubmitCard({
               autoComplete="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full rounded-2xl border border-[#071007]/10 bg-[#eef2ec] px-4 py-4 text-base font-bold text-[#071007] outline-none transition placeholder:text-[#6a746c]/65 focus:border-[#f5c84b] focus:ring-4 focus:ring-[#f5c84b]/20 md:border-white/10 md:bg-[#071007] md:text-white"
+              className="w-full rounded-2xl border border-[var(--app-border)] bg-[var(--app-input)] px-4 py-4 text-base font-bold text-[var(--app-panel-text)] outline-none transition placeholder:text-[var(--app-muted-strong)] focus:border-[var(--app-accent)] focus:ring-4 focus:ring-[var(--app-accent)]/20"
               placeholder="you@example.com"
             />
           </div>
@@ -831,7 +853,7 @@ function SubmitCard({
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="w-full rounded-2xl bg-[#f5c84b] px-4 py-4 text-sm font-black text-[#071007] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-2xl bg-[var(--app-accent)] px-4 py-4 text-sm font-black text-[var(--app-button-text)] transition hover:bg-[var(--app-button)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? "Submitting..." : "Submit Bracket"}
           </button>
@@ -845,16 +867,16 @@ function MatchHeader({ meta, index }: { meta: MatchMeta[]; index: number }) {
   const [date = "", time = ""] = (meta[index]?.date || "").split(" - ");
 
   return (
-    <div className="mb-3 flex items-start justify-between gap-3 border-b border-[#071007]/15 pb-2 md:border-white/10">
-      <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#6a746c] md:text-white/45">
+    <div className="mb-1.5 flex items-start justify-between gap-3 border-b border-[var(--app-border-strong)] pb-1.5 md:mb-3 md:pb-2">
+      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[var(--app-muted-strong)] md:text-[11px]">
         Match {meta[index]?.matchNo || index + 1}
       </p>
 
       <div className="text-right">
-        <p className="text-sm font-black text-[#071007] md:text-white">
+        <p className="text-xs font-black text-[var(--app-panel-text)] md:text-sm">
           {date}
         </p>
-        <p className="text-sm font-black text-[#071007] md:text-[#f5c84b]">
+        <p className="text-xs font-black text-[var(--app-panel-text)] md:text-sm md:text-[var(--app-accent)]">
           {time}
         </p>
       </div>
@@ -866,6 +888,7 @@ function RoundStageRail({
   rounds,
   activeRound,
   onSelect,
+  compact = false,
 }: {
   rounds: {
     key: RoundKey;
@@ -876,46 +899,73 @@ function RoundStageRail({
   }[];
   activeRound: RoundKey;
   onSelect: (round: RoundKey) => void;
+  compact?: boolean;
 }) {
   return (
-    <div className="mb-6 overflow-x-auto pb-2">
-      <div className="flex min-w-[680px] items-end gap-2 rounded-[1.6rem] bg-[#c7cdc7] p-2">
+    <div
+      className={`${compact ? "" : "mb-6"} round-rail-scroll overflow-x-auto`}
+    >
+      <div
+        className={`flex w-max snap-x snap-mandatory items-end gap-2 rounded-[1.6rem] bg-[var(--app-rail)] p-2 ${
+          compact ? "min-w-full" : "min-w-[680px]"
+        }`}
+      >
         {rounds.map((round) => {
           const isActive = activeRound === round.key;
           const picked = round.winners.filter(Boolean).length;
+          const completion = picked / round.matches.length;
+          const filledBars = picked > 0 ? Math.ceil(completion * 5) : 0;
 
           return (
             <button
               key={round.key}
               type="button"
               onClick={() => onSelect(round.key)}
-              className={`min-h-24 flex-1 rounded-[1.35rem] px-3 py-3 text-left transition ${
+              className={`snap-center rounded-[1.35rem] px-3 text-left transition ${
                 isActive
-                  ? "bg-[#18391c] text-white shadow-[0_14px_28px_rgba(6,34,7,0.26)]"
-                  : "text-[#6a746c]"
-              }`}
+                  ? "bg-[var(--app-green)] text-white shadow-[0_14px_28px_rgba(0,89,46,0.24)]"
+                  : "text-[var(--app-rail-muted)]"
+              } ${compact ? "min-h-14 w-[122px] py-2" : "min-h-24 flex-1 py-3"}`}
             >
-              <span className="block text-sm font-black leading-tight">
+              <span
+                className={`block font-black leading-tight ${
+                  compact ? "text-[11px]" : "text-sm"
+                }`}
+              >
                 {round.title}
               </span>
-              <span className="mt-4 flex h-7 items-center gap-1.5">
-                {Array.from({ length: Math.min(round.matches.length, 5) }).map(
-                  (_, index) => (
+
+              <span
+                className={`flex items-center gap-1.5 ${
+                  compact ? "mt-1.5 h-3.5" : "mt-4 h-7"
+                }`}
+              >
+                {Array.from({ length: 5 }).map((_, index) => {
+                  const isFilled = index < filledBars;
+
+                  return (
                     <span
                       key={`${round.key}-bar-${index}`}
-                      className={`h-1.5 rounded-full ${
-                        isActive ? "bg-white" : "bg-white/80"
+                      className={`h-1.5 rounded-full transition ${
+                        isFilled
+                          ? isActive
+                            ? "bg-[var(--app-accent)]"
+                            : "bg-[var(--app-green)]"
+                          : isActive
+                            ? "bg-white/35"
+                            : "bg-white/80"
                       }`}
                       style={{
-                        width: `${Math.max(22, 46 - index * 5)}px`,
+                        width: `${Math.max(compact ? 10 : 22, (compact ? 24 : 46) - index * 5)}px`,
                       }}
                     />
-                  )
-                )}
+                  );
+                })}
               </span>
+
               <span
                 className={`mt-2 block text-[11px] font-black uppercase tracking-[0.14em] ${
-                  isActive ? "text-[#f5c84b]" : "text-[#6a746c]"
+                  isActive ? "text-[var(--app-accent)]" : "text-[var(--app-rail-muted)]"
                 }`}
               >
                 {picked}/{round.matches.length}
@@ -946,19 +996,19 @@ function TeamPickButton({
       type="button"
       disabled={isDisabled}
       onClick={onClick}
-      className={`group flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left transition disabled:cursor-not-allowed disabled:opacity-55 ${
+      className={`group flex w-full items-center gap-2.5 rounded-2xl border px-3 py-2 text-left transition disabled:cursor-not-allowed disabled:opacity-55 ${
         selected
-          ? "border-[#f5c84b] bg-[#f5c84b] text-[#071007] shadow-[0_10px_22px_rgba(245,200,75,0.28)]"
-          : "border-[#071007]/10 bg-white text-[#071007] hover:border-[#f5c84b] md:border-white/10 md:bg-white/[0.08] md:text-white md:hover:bg-white/[0.14]"
+          ? "border-[var(--app-accent)] bg-[var(--app-accent)] text-[var(--app-button-text)] shadow-[0_10px_22px_rgba(255,171,0,0.28)]"
+          : "border-[var(--app-border)] bg-[var(--app-team)] text-[var(--app-team-text)] hover:border-[var(--app-accent)] md:hover:bg-[var(--app-border-strong)]"
       } ${compact ? "md:rounded-xl md:px-3 md:py-2.5" : ""}`}
     >
       <span
         className={`grid shrink-0 place-items-center rounded-full font-black ${
-          compact ? "h-8 w-8 text-[10px]" : "h-14 w-14 text-sm"
+          compact ? "h-8 w-8 text-[10px]" : "h-9 w-9 text-[11px]"
         } ${
           selected
-            ? "bg-[#071007] text-white"
-            : "bg-[#8d8f93] text-white md:bg-white/15"
+            ? "bg-[var(--app-surface-deep)] text-white"
+            : "bg-[var(--app-seed)] text-white"
         }`}
       >
         {team.includes("TBD") ? "TBD" : team.slice(0, 3)}
@@ -966,7 +1016,7 @@ function TeamPickButton({
 
       <span
         className={`min-w-0 flex-1 font-black leading-tight ${
-          compact ? "text-sm" : "text-xl"
+          compact ? "text-sm" : "text-lg"
         }`}
       >
         {team}
@@ -993,19 +1043,19 @@ function MobileRound({
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm font-black uppercase tracking-[0.18em] text-[#6a746c]">
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--app-muted-strong)]">
           {title}
         </p>
-        <p className="text-sm font-black text-[#6a746c]">
+        <p className="text-xs font-black text-[var(--app-muted-strong)]">
           {winners.filter(Boolean).length}/{matches.length}
         </p>
       </div>
 
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-2.5">
         {matches.map((match, index) => (
           <div
             key={`${roundKey}-${index}`}
-            className="relative rounded-[1.65rem] bg-white p-4 text-[#071007] shadow-[0_16px_32px_rgba(7,16,7,0.12)]"
+            className="relative rounded-[1.2rem] bg-[var(--app-surface)] p-2.5 text-[var(--app-panel-text)] shadow-[0_12px_26px_var(--app-shadow)]"
           >
             <MatchHeader meta={meta} index={index} />
 
@@ -1043,15 +1093,15 @@ function Round({
 }) {
   return (
     <section>
-      <h2 className="mb-4 text-lg font-black text-white">{title}</h2>
+      <h2 className="mb-4 text-lg font-black text-[var(--app-panel-text)]">{title}</h2>
 
       <div className="flex flex-col gap-10">
         {matches.map((match, index) => (
           <div
             key={`${roundKey}-${index}`}
-            className={`relative rounded-[1.35rem] border border-white/10 bg-[#071007] p-4 shadow-[0_14px_34px_rgba(0,0,0,0.2)] transition ${
+            className={`relative rounded-[1.35rem] border border-[var(--app-border)] bg-[var(--app-surface-strong)] p-4 shadow-[0_14px_34px_var(--app-shadow)] transition ${
               title === "Final"
-                ? "scale-110 border-[#f5c84b]"
+                ? "scale-110 border-[var(--app-accent)]"
                 : title === "Semifinals"
                   ? "scale-105"
                   : ""
@@ -1059,12 +1109,12 @@ function Round({
           >
             {title !== "Final" && (
               <>
-                <div className="absolute -right-8 top-1/2 hidden h-[2px] w-8 -translate-y-1/2 bg-[#f5c84b]/35 lg:block" />
+                <div className="absolute -right-8 top-1/2 hidden h-[2px] w-8 -translate-y-1/2 bg-[var(--app-accent)]/35 lg:block" />
 
                 {index % 2 === 0 ? (
-                  <div className="absolute -right-8 top-1/2 hidden h-[calc(100%+40px)] w-[2px] bg-[#f5c84b]/20 lg:block" />
+                  <div className="absolute -right-8 top-1/2 hidden h-[calc(100%+40px)] w-[2px] bg-[var(--app-accent)]/20 lg:block" />
                 ) : (
-                  <div className="absolute -right-8 bottom-1/2 hidden h-[calc(100%+40px)] w-[2px] bg-[#f5c84b]/20 lg:block" />
+                  <div className="absolute -right-8 bottom-1/2 hidden h-[calc(100%+40px)] w-[2px] bg-[var(--app-accent)]/20 lg:block" />
                 )}
               </>
             )}
@@ -1098,7 +1148,7 @@ function LeaderboardGrid({
 }) {
   if (isLoadingLeaderboard) {
     return (
-      <p className="mt-5 text-sm font-bold text-[#5c675f] md:text-white/55">
+      <p className="mt-5 text-sm font-bold text-[var(--app-muted)]">
         Loading leaderboard...
       </p>
     );
@@ -1106,7 +1156,7 @@ function LeaderboardGrid({
 
   if (leaderboard.length === 0) {
     return (
-      <p className="mt-5 text-sm font-bold text-[#5c675f] md:text-white/55">
+      <p className="mt-5 text-sm font-bold text-[var(--app-muted)]">
         No leaderboard entries yet.
       </p>
     );
@@ -1119,10 +1169,10 @@ function LeaderboardGrid({
           key={entry.id}
           className={`rounded-[1.35rem] border p-4 transition-all ${
             index === 0
-              ? "border-[#f5c84b] bg-[#f5c84b] text-[#071007]"
-              : index === 1
-                ? "border-[#cfd4d0] bg-[#eef2ec] text-[#071007] md:bg-white/10 md:text-white"
-                : "border-[#b8872d] bg-[#f1dcc0] text-[#071007] md:bg-[#b8872d]/20 md:text-white"
+              ? "border-[var(--app-accent)] bg-[var(--app-accent)] text-[var(--app-button-text)]"
+            : index === 1
+                ? "border-[#d7dde0] bg-[#e9edf0] text-[#071007]"
+                : "border-[#cd7f32] bg-[#cd7f32] text-[#071007]"
           }`}
         >
           <p className="text-xs font-black uppercase tracking-[0.18em] opacity-70">
@@ -1152,10 +1202,10 @@ function FullLeaderboardView({
   loadLeaderboard: () => void;
 }) {
   return (
-    <main className="min-h-screen bg-[#dfe5df] text-[#071007] md:bg-[#071007] md:text-white">
-      <div className="bg-[#062207] px-5 pb-8 pt-6 text-white md:px-8">
+    <main className="min-h-screen bg-[var(--app-page)] text-[var(--app-text)]">
+      <div className="bg-[var(--app-green)] px-5 pb-8 pt-6 text-white md:px-8">
         <div className="mx-auto max-w-5xl">
-          <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f5c84b]">
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-[var(--app-accent)]">
             2026 World Cup
           </p>
 
@@ -1171,7 +1221,7 @@ function FullLeaderboardView({
           <button
             type="button"
             onClick={loadLeaderboard}
-            className="mt-5 rounded-full bg-white px-5 py-3 text-sm font-black text-[#071007] transition hover:bg-[#f5c84b]"
+            className="mt-5 rounded-full bg-[var(--app-button)] px-5 py-3 text-sm font-black text-[var(--app-button-text)] transition hover:bg-[var(--app-accent)]"
           >
             Refresh Leaderboard
           </button>
@@ -1179,22 +1229,22 @@ function FullLeaderboardView({
       </div>
 
       <div className="mx-auto max-w-5xl px-4 py-6 md:px-8">
-        <div className="mb-5 rounded-[1.5rem] border border-black/10 bg-white p-5 shadow-[0_16px_44px_rgba(0,0,0,0.12)] md:border-white/10 md:bg-[#101810]">
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#6a746c] md:text-[#f5c84b]">
+        <div className="mb-5 rounded-[1.5rem] border border-[var(--app-border)] bg-[var(--app-surface)] p-5 shadow-[0_16px_44px_var(--app-shadow)]">
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[var(--app-accent)]">
             Coming Next
           </p>
           <h2 className="mt-2 text-2xl font-black">Find My Bracket</h2>
-          <p className="mt-2 text-sm font-medium text-[#5c675f] md:text-white/55">
+          <p className="mt-2 text-sm font-medium text-[var(--app-muted)]">
             This area is reserved for the post-deadline email lookup flow.
           </p>
         </div>
 
         {isLoadingLeaderboard ? (
-          <p className="text-sm font-bold text-[#5c675f] md:text-white/55">
+          <p className="text-sm font-bold text-[var(--app-muted)]">
             Loading leaderboard...
           </p>
         ) : leaderboard.length === 0 ? (
-          <p className="text-sm font-bold text-[#5c675f] md:text-white/55">
+          <p className="text-sm font-bold text-[var(--app-muted)]">
             No leaderboard entries yet.
           </p>
         ) : (
@@ -1204,12 +1254,12 @@ function FullLeaderboardView({
                 key={entry.id}
                 className={`rounded-[1.35rem] border p-5 shadow-[0_12px_34px_rgba(0,0,0,0.1)] ${
                   index === 0
-                    ? "border-[#f5c84b] bg-[#f5c84b] text-[#071007]"
+                    ? "border-[var(--app-accent)] bg-[var(--app-accent)] text-[var(--app-button-text)]"
                     : index === 1
-                      ? "border-[#cfd4d0] bg-white text-[#071007] md:bg-[#101810] md:text-white"
+                      ? "border-[#cfd4d0] bg-[#e9edf0] text-[#071007]"
                       : index === 2
-                        ? "border-[#b8872d] bg-[#f1dcc0] text-[#071007] md:bg-[#101810] md:text-white"
-                        : "border-black/10 bg-white text-[#071007] md:border-white/10 md:bg-[#101810] md:text-white"
+                        ? "border-[#cd7f32] bg-[#cd7f32] text-[#071007]"
+                        : "border-[var(--app-border)] bg-[var(--app-surface)] text-[var(--app-panel-text)]"
                 }`}
               >
                 <div className="flex items-center justify-between gap-4">
