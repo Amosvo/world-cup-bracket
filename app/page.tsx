@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const SUBMISSION_DEADLINE = new Date("2026-06-27T23:59:00-05:00");
 
@@ -114,6 +114,7 @@ export default function Home() {
   const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState(true);
   const [mobileRound, setMobileRound] = useState<RoundKey>("r32");
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining());
+  const mobileBracketRef = useRef<HTMLElement | null>(null);
 
   const submissionsClosed = timeLeft.total <= 0;
 
@@ -395,6 +396,17 @@ export default function Home() {
   );
   const currentMobileRound = mobileRounds[currentMobileRoundIndex];
 
+  function navigateMobileRound(round: RoundKey) {
+    setMobileRound(round);
+
+    window.setTimeout(() => {
+      mobileBracketRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 0);
+  }
+
   return (
     <main className="min-h-screen bg-[var(--app-page)] text-[var(--app-text)]">
       <header className="bg-[var(--app-green)] px-5 pb-7 pt-7 text-white md:px-8 md:pb-8 md:pt-5">
@@ -527,7 +539,10 @@ export default function Home() {
         </div>
       </div>
 
-      <section className="px-4 pb-7 pt-6 md:hidden">
+      <section
+        ref={mobileBracketRef}
+        className="scroll-mt-40 px-4 pb-7 pt-6 md:hidden"
+      >
         <div className="mb-5 flex items-center justify-between">
           <div>
             <h2 className="text-4xl font-black leading-none tracking-normal">
@@ -557,7 +572,7 @@ export default function Home() {
             type="button"
             disabled={currentMobileRoundIndex === 0}
             onClick={() =>
-              setMobileRound(mobileRounds[currentMobileRoundIndex - 1].key)
+              navigateMobileRound(mobileRounds[currentMobileRoundIndex - 1].key)
             }
             className="rounded-2xl border border-[var(--app-border-strong)] bg-[var(--app-button)] px-4 py-4 text-sm font-black text-[var(--app-button-text)] shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
           >
@@ -568,7 +583,7 @@ export default function Home() {
             type="button"
             disabled={currentMobileRoundIndex === mobileRounds.length - 1}
             onClick={() =>
-              setMobileRound(mobileRounds[currentMobileRoundIndex + 1].key)
+              navigateMobileRound(mobileRounds[currentMobileRoundIndex + 1].key)
             }
             className="rounded-2xl bg-[var(--app-surface-deep)] px-4 py-4 text-sm font-black text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-40"
           >
@@ -901,6 +916,22 @@ function RoundStageRail({
   onSelect: (round: RoundKey) => void;
   compact?: boolean;
 }) {
+  const roundButtonRefs = useRef<Record<RoundKey, HTMLButtonElement | null>>({
+    r32: null,
+    r16: null,
+    qf: null,
+    sf: null,
+    final: null,
+  });
+
+  useEffect(() => {
+    roundButtonRefs.current[activeRound]?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+  }, [activeRound]);
+
   return (
     <div
       className={`${compact ? "" : "mb-6"} round-rail-scroll overflow-x-auto`}
@@ -918,6 +949,9 @@ function RoundStageRail({
 
           return (
             <button
+              ref={(button) => {
+                roundButtonRefs.current[round.key] = button;
+              }}
               key={round.key}
               type="button"
               onClick={() => onSelect(round.key)}
