@@ -119,16 +119,6 @@ export default function Home() {
 
   const submissionsClosed = timeLeft.total <= 0;
 
-  const totalPicks = 31;
-
-  const completedPicks =
-    r32Winners.filter(Boolean).length +
-    r16Winners.filter(Boolean).length +
-    qfWinners.filter(Boolean).length +
-    sfWinners.filter(Boolean).length +
-    (champion ? 1 : 0);
-
-  const completionPercent = Math.round((completedPicks / totalPicks) * 100);
   async function loadLeaderboard() {
     try {
       setIsLoadingLeaderboard(true);
@@ -404,6 +394,9 @@ export default function Home() {
     (round) => round.key === mobileRound
   );
   const currentMobileRound = mobileRounds[currentMobileRoundIndex];
+  const desktopActiveRound =
+    mobileRounds.find((round) => round.winners.some((winner) => !winner))
+      ?.key || "final";
 
   function navigateMobileRound(round: RoundKey) {
     setMobileRound(round);
@@ -446,7 +439,7 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="mt-6 grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+          <div className="mt-6 grid gap-3 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
               <p className="max-w-2xl text-base font-bold text-white/85 md:text-lg">
                 Can you predict the champion?! Once the group stage finishes on
@@ -474,7 +467,7 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="sticky top-0 z-40 border-b border-[var(--app-border)] bg-[var(--app-sticky)] px-3 pb-2 pt-3 shadow-[0_12px_28px_var(--app-shadow)] backdrop-blur md:hidden">
+      <div className="sticky top-0 z-40 border-b border-[var(--app-border)] bg-[var(--app-sticky)] px-3 pb-2 pt-3 shadow-[0_12px_28px_var(--app-shadow)] backdrop-blur lg:hidden">
         <div className="mb-3 flex justify-center gap-2 overflow-x-auto">
           <button
             type="button"
@@ -508,23 +501,18 @@ export default function Home() {
         />
       </div>
 
-      <div className="sticky top-0 z-40 hidden border-b border-[var(--app-gold-border)] bg-[var(--app-sticky)] px-8 py-3 shadow-[0_12px_28px_var(--app-shadow)] backdrop-blur md:block">
-        <div className="mx-auto flex max-w-[1800px] items-center justify-between gap-3">
+      <div className="sticky top-0 z-40 hidden border-b border-[var(--app-gold-border)] bg-[var(--app-sticky)] px-8 py-3 shadow-[0_12px_28px_var(--app-shadow)] backdrop-blur lg:block">
+        <div className="mx-auto flex max-w-[1800px] items-center justify-between gap-4">
           <div className="min-w-0 flex-1">
-            <div className="mb-2 flex items-center justify-between text-[11px] font-black uppercase tracking-[0.16em] text-[var(--app-muted-strong)]">
-              <span>Bracket Progress</span>
-              <span>{completedPicks}/31</span>
-            </div>
-
-            <div className="h-2 overflow-hidden rounded-full bg-[var(--app-border)]">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-[var(--app-accent)] via-white to-[var(--app-accent)] transition-all duration-300"
-                style={{ width: `${completionPercent}%` }}
-              />
-            </div>
+            <RoundStageRail
+              rounds={mobileRounds}
+              activeRound={desktopActiveRound}
+              onSelect={() => undefined}
+              compact
+            />
           </div>
 
-          <div className="flex gap-2 overflow-x-auto">
+          <div className="flex shrink-0 gap-2 overflow-x-auto">
             <button
               type="button"
               onClick={autoSelectBracket}
@@ -553,7 +541,7 @@ export default function Home() {
 
       <section
         ref={mobileBracketRef}
-        className="scroll-mt-40 px-4 pb-7 pt-6 md:hidden"
+        className="scroll-mt-40 px-4 pb-7 pt-6 lg:hidden"
       >
         <div className="mb-5 flex items-center justify-between">
           <div>
@@ -604,19 +592,15 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="hidden px-6 py-8 md:block">
+      <section className="hidden px-6 py-8 lg:block">
         <div className="mx-auto max-w-[1800px]">
           <div className="mb-6 flex items-end justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.24em] text-[var(--app-accent)]">
                 Bracket
               </p>
-              <h2 className="mt-2 text-4xl font-black">Knockout Predictor</h2>
+              <h2 className="mt-2 text-4xl font-black">Bracket</h2>
             </div>
-            <p className="max-w-md text-right text-sm font-medium text-[var(--app-muted-strong)]">
-              Desktop keeps the full bracket in view with cleaner match lanes
-              and connector lines.
-            </p>
           </div>
 
           <div className="overflow-x-auto rounded-[2rem] border border-[var(--app-border)] bg-[var(--app-surface)] p-6 shadow-[0_22px_70px_var(--app-shadow)]">
