@@ -449,7 +449,10 @@ export default function Home() {
           <div className="mt-6 grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
             <div>
               <p className="max-w-2xl text-base font-bold text-white/85 md:text-lg">
-                Can you predict the champion?!
+                Can you predict the champion?! Once the group stage finishes on
+                June 27, the qualified teams will automatically replace the
+                placeholders. From there, you can fill out the knockout bracket
+                and predict the 2026 World Cup champion!
               </p>
             </div>
 
@@ -470,17 +473,6 @@ export default function Home() {
           </div>
         </div>
       </header>
-
-      <section className="border-b border-[var(--app-gold-border)] bg-[var(--app-sticky)] px-4 py-3 text-center shadow-[0_10px_24px_var(--app-shadow)] md:px-8">
-        <p className="mx-auto max-w-3xl text-xs font-bold leading-relaxed text-[var(--app-muted)] md:text-sm">
-          <span className="font-black text-[var(--app-accent)]">
-            Can you predict the champion?!
-          </span>{" "}
-          Once the group stage finishes on June 27, the qualified teams will
-          automatically replace the placeholders. From there, you can fill out
-          the knockout bracket and predict the 2026 World Cup champion!
-        </p>
-      </section>
 
       <div className="sticky top-0 z-40 border-b border-[var(--app-border)] bg-[var(--app-sticky)] px-3 pb-2 pt-3 shadow-[0_12px_28px_var(--app-shadow)] backdrop-blur md:hidden">
         <div className="mb-3 flex justify-center gap-2 overflow-x-auto">
