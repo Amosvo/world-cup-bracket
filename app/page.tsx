@@ -1084,7 +1084,7 @@ function MobileRound({
         </p>
       </div>
 
-      <div className="flex flex-col gap-2.5">
+      <div className="grid grid-cols-1 gap-2.5 landscape:grid-cols-3">
         {matches.map((match, index) => (
           <div
             key={`${roundKey}-${index}`}
