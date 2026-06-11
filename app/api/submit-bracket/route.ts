@@ -1,3 +1,8 @@
+import {
+  getDisplayNameError,
+  normalizeDisplayName,
+} from "@/app/lib/displayName";
+
 const SUBMISSION_DEADLINE = new Date("2026-06-27T23:59:00-05:00");
 
 export async function POST(request: Request) {
@@ -12,14 +17,6 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!process.env.NOTION_TOKEN) {
-      throw new Error("Missing NOTION_TOKEN");
-    }
-
-    if (!process.env.NOTION_DATABASE_ID) {
-      throw new Error("Missing NOTION_DATABASE_ID");
-    }
-
     const body = await request.json();
 
     const {
@@ -31,6 +28,28 @@ export async function POST(request: Request) {
       quarterfinals,
       semifinals,
     } = body;
+
+    const nameError = getDisplayNameError(name);
+
+    if (nameError) {
+      return Response.json(
+        {
+          success: false,
+          error: nameError,
+        },
+        { status: 400 }
+      );
+    }
+
+    const displayName = normalizeDisplayName(name);
+
+    if (!process.env.NOTION_TOKEN) {
+      throw new Error("Missing NOTION_TOKEN");
+    }
+
+    if (!process.env.NOTION_DATABASE_ID) {
+      throw new Error("Missing NOTION_DATABASE_ID");
+    }
 
     if (!email) {
       return Response.json(
@@ -74,7 +93,7 @@ export async function POST(request: Request) {
         title: [
           {
             text: {
-              content: name || "Unnamed Entry",
+              content: displayName,
             },
           },
         ],
