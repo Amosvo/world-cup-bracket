@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1024" height="1024" rx="220" fill="#00592e"/>
+  <rect x="120" y="120" width="784" height="784" rx="178" fill="white" fill-opacity="0.08"/>
+  <g filter="url(#shadow)">
+    <g>
+      <path d="M 587.24 305.27 A 220 220 0 0 1 729.41 478.34" fill="none" stroke="#f2673a" stroke-width="132" stroke-linecap="round"/>
+      <path d="M 729.41 478.34 A 220 220 0 0 1 635.02 694.39" fill="none" stroke="#eef0e8" stroke-width="132" stroke-linecap="round"/>
+      <path d="M 635.02 694.39 A 220 220 0 0 1 411.44 707.67" fill="none" stroke="#a5aaa2" stroke-width="132" stroke-linecap="round"/>
+      <path d="M 411.44 707.67 A 220 220 0 0 1 292.13 504.32" fill="none" stroke="#1b9fcb" stroke-width="132" stroke-linecap="round"/>
+      <path d="M 292.13 504.32 A 220 220 0 0 1 400.67 322.25" fill="none" stroke="#13b37f" stroke-width="132" stroke-linecap="round"/>
+      <path d="M 400.67 322.25 A 220 220 0 0 1 587.24 305.27" fill="none" stroke="#eef0e8" stroke-width="132" stroke-linecap="round"/>
+      <circle cx="512" cy="512" r="96" fill="#00592e"/>
+      <circle cx="512" cy="512" r="96" fill="black" fill-opacity="0.12"/>
+    </g>
+  </g>
+  <defs>
+    <filter id="shadow" x="160" y="150" width="704" height="724" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="36" stdDeviation="38" flood-color="#000000" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+</svg>
