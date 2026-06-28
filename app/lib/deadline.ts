@@ -1,3 +1,3 @@
-export const SUBMISSION_DEADLINE = new Date("2026-06-28T15:45:00-05:00");
+export const SUBMISSION_DEADLINE = new Date("2026-06-28T23:59:00-05:00");
 
-export const SUBMISSION_DEADLINE_LABEL = "Jun 28, 2026 at 3:45 PM CDT";
+export const SUBMISSION_DEADLINE_LABEL = "Jun 28, 2026 at 11:59 PM CDT";
