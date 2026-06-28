@@ -1,9 +1,8 @@
+import { SUBMISSION_DEADLINE } from "@/app/lib/deadline";
 import {
   getDisplayNameError,
   normalizeDisplayName,
 } from "@/app/lib/displayName";
-
-const SUBMISSION_DEADLINE = new Date("2026-06-27T23:59:00-05:00");
 
 export async function POST(request: Request) {
   try {

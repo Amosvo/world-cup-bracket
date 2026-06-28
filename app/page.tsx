@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import {
+  SUBMISSION_DEADLINE,
+  SUBMISSION_DEADLINE_LABEL,
+} from "./lib/deadline";
 import { getDisplayNameError, normalizeDisplayName } from "./lib/displayName";
-
-const SUBMISSION_DEADLINE = new Date("2026-06-27T23:59:00-05:00");
 
 const roundOf32 = [
   ["South Africa", "Canada"],
@@ -78,6 +80,41 @@ type LeaderboardEntry = {
 type MatchMeta = {
   matchNo: number;
   date: string;
+};
+
+const teamFlags: Record<string, string> = {
+  Algeria: "🇩🇿",
+  Argentina: "🇦🇷",
+  Australia: "🇦🇺",
+  Austria: "🇦🇹",
+  Belgium: "🇧🇪",
+  "Bosnia and Herzegovina": "🇧🇦",
+  Brazil: "🇧🇷",
+  Canada: "🇨🇦",
+  "Cape Verde": "🇨🇻",
+  Colombia: "🇨🇴",
+  Croatia: "🇭🇷",
+  "DR Congo": "🇨🇩",
+  Ecuador: "🇪🇨",
+  Egypt: "🇪🇬",
+  England: "🏴",
+  France: "🇫🇷",
+  Germany: "🇩🇪",
+  Ghana: "🇬🇭",
+  "Ivory Coast": "🇨🇮",
+  Japan: "🇯🇵",
+  Mexico: "🇲🇽",
+  Morocco: "🇲🇦",
+  Netherlands: "🇳🇱",
+  Norway: "🇳🇴",
+  Paraguay: "🇵🇾",
+  Portugal: "🇵🇹",
+  Senegal: "🇸🇳",
+  "South Africa": "🇿🇦",
+  Spain: "🇪🇸",
+  Sweden: "🇸🇪",
+  Switzerland: "🇨🇭",
+  "United States": "🇺🇸",
 };
 
 function randomPick(match: string[]) {
@@ -454,7 +491,7 @@ export default function Home() {
                 Deadline
               </p>
               <p className="mt-1 text-sm font-bold text-white">
-                Jun 27, 2026 at 11:59 PM CDT
+                {SUBMISSION_DEADLINE_LABEL}
               </p>
               <p
                 suppressHydrationWarning
@@ -1023,6 +1060,7 @@ function TeamPickButton({
   compact?: boolean;
 }) {
   const isDisabled = team.includes("TBD");
+  const teamFlag = teamFlags[team];
 
   return (
     <button
@@ -1036,15 +1074,16 @@ function TeamPickButton({
       } ${compact ? "md:rounded-xl md:px-3 md:py-2.5" : ""}`}
     >
       <span
-        className={`grid shrink-0 place-items-center rounded-full font-black ${
-          compact ? "h-8 w-8 text-[10px]" : "h-9 w-9 text-[11px]"
+        className={`grid shrink-0 place-items-center overflow-hidden rounded-full font-black shadow-inner ring-1 ring-black/10 ${
+          compact ? "h-8 w-8 text-xl" : "h-9 w-9 text-2xl"
         } ${
           selected
             ? "bg-[var(--app-surface-deep)] text-white"
             : "bg-[var(--app-seed)] text-white"
         }`}
+        title={team}
       >
-        {team.includes("TBD") ? "TBD" : team.slice(0, 3)}
+        {team.includes("TBD") ? "TBD" : teamFlag || team.slice(0, 3)}
       </span>
 
       <span
