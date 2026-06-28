@@ -6,22 +6,22 @@ import { getDisplayNameError, normalizeDisplayName } from "./lib/displayName";
 const SUBMISSION_DEADLINE = new Date("2026-06-27T23:59:00-05:00");
 
 const roundOf32 = [
-  ["2A", "2B"],
-  ["1C", "2F"],
-  ["1E", "3RD A/B/C/D/F"],
-  ["1F", "2C"],
-  ["2E", "2I"],
-  ["1I", "3RD C/D/F/G/H"],
-  ["1A", "3RD C/E/F/H/I"],
-  ["1L", "3RD E/H/I/J/K"],
-  ["1G", "3RD A/E/H/I/J"],
-  ["1D", "3RD B/E/F/I/J"],
-  ["1H", "2J"],
-  ["2K", "2L"],
-  ["1B", "3RD E/F/G/I/J"],
-  ["2D", "2G"],
-  ["1J", "2H"],
-  ["1K", "3RD D/E/I/J/L"],
+  ["South Africa", "Canada"],
+  ["Germany", "Paraguay"],
+  ["Netherlands", "Morocco"],
+  ["Brazil", "Japan"],
+  ["France", "Sweden"],
+  ["Ivory Coast", "Norway"],
+  ["Mexico", "Ecuador"],
+  ["England", "DR Congo"],
+  ["United States", "Bosnia and Herzegovina"],
+  ["Belgium", "Senegal"],
+  ["Portugal", "Croatia"],
+  ["Spain", "Austria"],
+  ["Switzerland", "Algeria"],
+  ["Argentina", "Cape Verde"],
+  ["Colombia", "Ghana"],
+  ["Australia", "Egypt"],
 ];
 
 const roundMeta = {
